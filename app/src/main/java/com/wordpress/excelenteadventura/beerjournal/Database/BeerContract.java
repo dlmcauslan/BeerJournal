@@ -37,7 +37,7 @@ public final class BeerContract {
                 + CONTENT_AUTHORITY + "/" + PATH_BEER;
 
         // Database table name
-        public static final String TABLE_NAME = "beers";
+        public static final String TABLE_NAME = "Beers";
 
         // Unique ID number for the beer in the database table
         // Type INTEGER
@@ -46,6 +46,8 @@ public final class BeerContract {
         // The table columns
         // Beer name - TEXT
         public static final String COLUMN_BEER_NAME = "Name";
+        // Beer photo - BLOB
+        public static final String COLUMN_BEER_PHOTO = "Photo";
         // Beer type - TEXT
         public static final String COLUMN_BEER_TYPE = "Type";
         // Beer rating - INTEGER (Divide by 2 to get actual rating out of 5)
@@ -56,6 +58,8 @@ public final class BeerContract {
         public static final String COLUMN_BEER_IBU = "IBU";
         // Tasting date - TEXT
         public static final String COLUMN_BEER_DATE = "Date";
+        // Comments - TEXT
+        public static final String COLUMN_BEER_COMMENTS = "Comments";
         // Brewery name - TEXT
         public static final String COLUMN_BREWERY_NAME = "Brewery";
         // Brewery country - TEXT
