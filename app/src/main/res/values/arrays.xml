@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+    <!-- These are the options displayed in the beer type drop-down Spinner -->
+    <string-array name="array_beer_type_options">
+        <item>@string/beer_not_chosen</item>
+        <item>@string/ale</item>
+        <item>@string/amber_ale</item>
+        <item>@string/brown_ale</item>
+        <item>@string/dark_lager</item>
+        <item>@string/hefe</item>
+        <item>@string/ipa</item>
+        <item>@string/lager</item>
+        <item>@string/pale_ale</item>
+        <item>@string/pilsner</item>
+        <item>@string/porter</item>
+        <item>@string/red_ale</item>
+        <item>@string/sour</item>
+        <item>@string/stout</item>
+        <item>@string/wheat_beer</item>
+        <item>@string/other</item>
+    </string-array>
+</resources>

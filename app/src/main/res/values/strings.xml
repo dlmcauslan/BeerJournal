@@ -1,0 +1,68 @@
+<resources>
+    <string name="app_name">Beer Journal</string>
+    <string name="add_beer_title">Add A Beer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="action_settings">Settings</string>
+
+
+    <!--Add beer strings-->
+    <string name = "add_beer_name">Beer Name</string>
+    <string name = "add_beer_type">Beer Type</string>
+    <string name = "add_beer_stats">Beer Stats</string>
+    <string name = "add_beer_brewery">Brewery</string>
+    <string name = "add_beer_brewery_name">Brewery Name</string>
+    <string name = "add_beer_location">Location</string>
+    <string name = "add_beer_comments">Comments</string>
+    <string name = "add_beer_rating">Rating</string>
+    <string name = "add_beer_photo">Photo</string>
+    <string name = "add_beer_date">Date</string>
+    <string name = "add_beer_percentage">Alcohol percentage</string>
+    <string name = "add_beer_percent_symbol">%</string>
+    <string name = "add_beer_bitterness">Bitterness</string>
+    <string name = "add_beer_IBU">IBU</string>
+    <string name="add_beer_button">Add Beer</string>
+
+    <!--Form hints-->
+    <string name = "add_beer_city">City</string>
+    <string name = "add_beer_state">State/Province</string>
+    <string name = "add_beer_country">Country</string>
+
+    <!--Beer types-->
+    <string name="other">Other</string>
+    <string name="pale_ale">Pale Ale</string>
+    <string name="ipa">India Pale Ale</string>
+    <string name="porter">Porter</string>
+    <string name="stout">Stout</string>
+    <string name="lager">Lager</string>
+    <string name="ale">Ale</string>
+    <string name="red_ale">Red Ale</string>
+    <string name="brown_ale">Brown Ale</string>
+    <string name="amber_ale">Amber Ale</string>
+    <string name="pilsner">Pilsner</string>
+    <string name="hefe">Hefeweizen</string>
+    <string name="wheat_beer">Wheat Beer</string>
+    <string name="dark_lager">Dark Lager</string>
+    <string name="sour">Sour Beer</string>
+    <string name="beer_not_chosen">---</string>
+
+
+    <!-- These are the options displayed in the rating drop-down Spinner -->
+    <string-array name="array_rating_options">
+        <item>---</item>
+        <item>5</item>
+        <item>4.5</item>
+        <item>4</item>
+        <item>3.5</item>
+        <item>3</item>
+        <item>2.5</item>
+        <item>2</item>
+        <item>1.5</item>
+        <item>1</item>
+        <item>0.5</item>
+        <item>0</item>
+    </string-array>
+
+</resources>
+
