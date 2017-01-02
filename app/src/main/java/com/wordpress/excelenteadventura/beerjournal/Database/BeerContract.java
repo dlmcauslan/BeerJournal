@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
- * Created by David-local on 12/31/2016.
+ * Created by DLMcAuslan on 12/31/2016.
  */
 
 public final class BeerContract {

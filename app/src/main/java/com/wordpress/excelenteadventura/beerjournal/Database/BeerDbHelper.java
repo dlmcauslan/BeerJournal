@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.wordpress.excelenteadventura.beerjournal.Database.BeerContract.BeerEntry;
 
 /**
- * Created by David-local on 1/1/2017.
+ * Created by DLMcAuslan on 1/1/2017.
  */
 
 public class BeerDbHelper extends SQLiteOpenHelper {
@@ -36,7 +36,7 @@ public class BeerDbHelper extends SQLiteOpenHelper {
                 + BeerEntry.COLUMN_BEER_RATING + " INTEGER NOT NULL DEFAULT 0, "
                 + BeerEntry.COLUMN_BEER_IBU + " INTEGER NOT NULL DEFAULT 0, "
                 + BeerEntry.COLUMN_BEER_PERCENTAGE + " REAL NOT NULL DEFAULT 0, "
-                + BeerEntry.COLUMN_BREWERY_NAME + " TEXT, "
+                + BeerEntry.COLUMN_BREWERY_NAME + " TEXT NOT NULL DEFAULT 'Unknown', "
                 + BeerEntry.COLUMN_BREWERY_CITY + " TEXT NOT NULL DEFAULT 'Unknown', "
                 + BeerEntry.COLUMN_BREWERY_STATE + " TEXT,"
                 + BeerEntry.COLUMN_BREWERY_COUNTRY + " TEXT NOT NULL DEFAULT 'Unknown', "
