@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +26,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -256,16 +260,108 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
+        // Projection specifying the columns we wish to load
+        String[] projection = {BeerEntry._ID,
+                BeerEntry.COLUMN_BEER_NAME,
+                BeerEntry.COLUMN_BEER_TYPE,
+                BeerEntry.COLUMN_BEER_IBU,
+                BeerEntry.COLUMN_BREWERY_NAME,
+                BeerEntry.COLUMN_BREWERY_CITY,
+                BeerEntry.COLUMN_BREWERY_STATE,
+                BeerEntry.COLUMN_BREWERY_COUNTRY,
+                BeerEntry.COLUMN_BEER_DATE,
+                BeerEntry.COLUMN_BEER_PERCENTAGE,
+                BeerEntry.COLUMN_BEER_RATING,
+                BeerEntry.COLUMN_BEER_COMMENTS,
+                BeerEntry.COLUMN_BEER_PHOTO};
+
+        // Return the cursorLoader that will execute the content providers query method
+        return new CursorLoader(getActivity(),
+                mCurrentBeerUri,
+                projection,
+                null, null, null);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // Bail early if the cursor is null or there is less than 1 row in the cursor
+        if (cursor == null || cursor.getCount() < 1) return;
 
+        // Move to the first row of the cursor (should be only row) and read data from it
+        if (cursor.moveToFirst()) {
+            // Get the data columns we're interested in
+            int beerNameColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_NAME);
+            int beerTypeColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_TYPE);
+            int beerIBUColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_IBU);
+            int breweryNameColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_NAME);
+            int cityColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_CITY);
+            int stateColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_STATE);
+            int countryColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_COUNTRY);
+            int dateColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_DATE);
+            int percentageColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_PERCENTAGE);
+            int ratingColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_RATING);
+            int commentsColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_COMMENTS);
+            int imageColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_PHOTO);
+
+            // Read the beer attributes from the cursor for the current beer
+            String beerName = cursor.getString(beerNameColumn);
+            String beerType = cursor.getString(beerTypeColumn);
+            int bitterness = cursor.getInt(beerIBUColumn);
+            String breweryName = cursor.getString(breweryNameColumn);
+            String city = cursor.getString(cityColumn);
+            String state = cursor.getString(stateColumn);
+            String country = cursor.getString(countryColumn);
+            String date = cursor.getString(dateColumn);
+            String comments = cursor.getString(commentsColumn);
+            double percentage = cursor.getDouble(percentageColumn);
+            double rating = ((double)cursor.getInt(ratingColumn)/2);
+            // TODO get image
+
+            // TODO Handle default values
+
+            // Update the edit text views with the attributes for the current beer
+            mBeerNameEditText.setText(beerName);
+            mBreweryNameEditText.setText(breweryName);
+            mCityEditText.setText(city);
+            mStateEditText.setText(state);
+            mCountryEditText.setText(country);
+            mCommentsEditText.setText(comments);
+            mPercentageEditText.setText(String.valueOf(percentage));
+            mBitternessEditText.setText(String.valueOf(bitterness));
+
+            // Update the spinners
+            if (beerType.equals(BeerEntry.DEAULT_STRING)) mBeerTypeSpinner.setSelection(0);
+            else {
+                List<String> typeArray = Arrays.asList(getResources().getStringArray(R.array.array_beer_type_options));
+                mBeerTypeSpinner.setSelection(typeArray.indexOf(beerType));
+//                Log.d(LOG_TAG, "type " + beerType + " " + typeArray.indexOf(beerType));
+
+            }
+            List<String> ratingArray = Arrays.asList(getResources().getStringArray(R.array.array_rating_options));
+            mBeerRatingSpinner.setSelection(ratingArray.indexOf(String.valueOf(rating)));
+//            Log.d(LOG_TAG, "rating " + String.valueOf(rating));
+
+            // Update the date picker
+            String[] dateArray = date.split("-");
+            mDatePicker.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]));
+
+            // TODO: update the image view
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        // If the loader is invalidated, clear out all the data from the input fields.
+        mBeerNameEditText.setText("");
+        mBreweryNameEditText.setText("");
+        mCityEditText.setText("");
+        mStateEditText.setText("");
+        mCountryEditText.setText("");
+        mCommentsEditText.setText("");
+        mPercentageEditText.setText("");
+        mBitternessEditText.setText("");
+        mBeerRatingSpinner.setSelection(0);
+        mBeerTypeSpinner.setSelection(0);
 
     }
 }
