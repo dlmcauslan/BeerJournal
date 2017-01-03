@@ -1,8 +1,10 @@
 package com.wordpress.excelenteadventura.beerjournal;
 
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry;
@@ -60,6 +63,24 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         // There will be no beer data until the loader finishes so pass in null for the cursor.
         mCursorAdapter = new BeerCursorAdapter(getActivity(), null);
         listView.setAdapter(mCursorAdapter);
+
+        // Setup the list item on click listener. Jumps to editor activity.
+        listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Create new intent to go to the AddBeer Activity
+                Intent intent = new Intent(getActivity(), AddBeerActivity.class);
+
+                // Create the content URI to pass through with the intent which represents the
+                // Beer item that was clicked on.
+                Uri currentBeerUri = ContentUris.withAppendedId(BeerEntry.CONTENT_URI,id);
+
+                // Set the URI on the data field of the intent and launch the activity
+                intent.setData(currentBeerUri);
+                startActivity(intent);
+            }
+        });
 
         // Start the loader
         getLoaderManager().initLoader(BEER_LOADER, null, this);
