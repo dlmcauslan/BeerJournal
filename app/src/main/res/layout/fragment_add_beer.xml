@@ -59,7 +59,9 @@
                         android:layout_weight="5"
                         android:layout_height="match_parent"
                         android:spinnerMode="dropdown"
-                        android:entries="@array/array_beer_type_options"/>
+                        android:entries="@array/array_beer_type_options"
+                        />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -223,12 +225,12 @@
         </LinearLayout>
 
 
-    <Button
-        android:id="@+id/button_add_beer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_beer_button"
-        android:layout_gravity="center_horizontal"/>
+    <!--<Button-->
+        <!--android:id="@+id/button_add_beer"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/add_beer_button"-->
+        <!--android:layout_gravity="center_horizontal"/>-->
 
 
 

@@ -1,10 +1,10 @@
-package com.wordpress.excelenteadventura.beerjournal.Database;
+package com.wordpress.excelenteadventura.beerjournal.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.wordpress.excelenteadventura.beerjournal.Database.BeerContract.BeerEntry;
+import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry;
 
 /**
  * Created by DLMcAuslan on 1/1/2017.
@@ -34,8 +34,8 @@ public class BeerDbHelper extends SQLiteOpenHelper {
                 + BeerEntry.COLUMN_BEER_PHOTO + " BLOB, "
                 + BeerEntry.COLUMN_BEER_TYPE + " TEXT NOT NULL DEFAULT 'Unknown', "
                 + BeerEntry.COLUMN_BEER_RATING + " INTEGER NOT NULL DEFAULT 0, "
-                + BeerEntry.COLUMN_BEER_IBU + " INTEGER NOT NULL DEFAULT 0, "
-                + BeerEntry.COLUMN_BEER_PERCENTAGE + " REAL NOT NULL DEFAULT 0, "
+                + BeerEntry.COLUMN_BEER_IBU + " INTEGER NOT NULL DEFAULT -1, "
+                + BeerEntry.COLUMN_BEER_PERCENTAGE + " REAL NOT NULL DEFAULT -1, "
                 + BeerEntry.COLUMN_BREWERY_NAME + " TEXT NOT NULL DEFAULT 'Unknown', "
                 + BeerEntry.COLUMN_BREWERY_CITY + " TEXT NOT NULL DEFAULT 'Unknown', "
                 + BeerEntry.COLUMN_BREWERY_STATE + " TEXT,"

@@ -1,4 +1,4 @@
-package com.wordpress.excelenteadventura.beerjournal.Database;
+package com.wordpress.excelenteadventura.beerjournal.database;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
-import com.wordpress.excelenteadventura.beerjournal.Database.BeerContract.BeerEntry;
+import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry;
 
 /**
  * Content provider for Beer Journal app.
@@ -108,16 +108,16 @@ public class BeerProvider extends ContentProvider {
 //        String city = values.getAsString(BeerEntry.COLUMN_BREWERY_CITY);
 //        String country = values.getAsString(BeerEntry.COLUMN_BREWERY_COUNTRY);
         Integer rating = values.getAsInteger(BeerEntry.COLUMN_BEER_RATING);
-        Float percentage = values.getAsFloat(BeerEntry.COLUMN_BEER_PERCENTAGE);
+        Double percentage = values.getAsDouble(BeerEntry.COLUMN_BEER_PERCENTAGE);
         Integer ibu = values.getAsInteger(BeerEntry.COLUMN_BEER_IBU);
         if (name == null) throw new IllegalArgumentException("Beer requires a name.");
-        if (date == null) throw new IllegalArgumentException("Brewery requires a name.");
+        if (date == null) throw new IllegalArgumentException("Tasting date required.");
 //        if (city == null) throw new Illeg"Tasting date required.");
 //        if (breweryName == null) throw alArgumentException("City required.");
 //        if (country == null) throw new IllegalArgumentException("Country required.");
-        if (rating != null && BeerEntry.isValidRating(rating)) throw new IllegalArgumentException("Beer rating must be between 0 and 5.");
-        if (percentage != null && BeerEntry.isValidPercentage(percentage)) throw new IllegalArgumentException("Percentage must be between 0 and 100");
-        if (ibu != null && BeerEntry.isValidBitterness(ibu)) throw new IllegalArgumentException("Beer bitterness must be greater than 0.");
+        if (rating != null && !BeerEntry.isValidRating(rating)) throw new IllegalArgumentException("Beer rating must be between 0 and 5.");
+        if (percentage != null && !BeerEntry.isValidPercentage(percentage)) throw new IllegalArgumentException("Percentage must be between 0 and 100");
+        if (ibu != null && !BeerEntry.isValidBitterness(ibu)) throw new IllegalArgumentException("Beer bitterness must be greater than 0.");
 
         // Don't need to check the other fields, all values are valid, including null.
 
@@ -165,14 +165,14 @@ public class BeerProvider extends ContentProvider {
         }
         if (values.containsKey(BeerEntry.COLUMN_BEER_DATE)) {
             String date = values.getAsString(BeerEntry.COLUMN_BEER_DATE);
-            if (date == null) throw new IllegalArgumentException("Brewery requires a name.");
+            if (date == null) throw new IllegalArgumentException("Tasting date required.");
         }
         if (values.containsKey(BeerEntry.COLUMN_BEER_RATING)) {
             Integer rating = values.getAsInteger(BeerEntry.COLUMN_BEER_RATING);
             if (rating != null && BeerEntry.isValidRating(rating)) throw new IllegalArgumentException("Beer rating must be between 0 and 5.");
         }
         if (values.containsKey(BeerEntry.COLUMN_BEER_PERCENTAGE)) {
-            Float percentage = values.getAsFloat(BeerEntry.COLUMN_BEER_PERCENTAGE);
+            Double percentage = values.getAsDouble(BeerEntry.COLUMN_BEER_PERCENTAGE);
             if (percentage != null && BeerEntry.isValidPercentage(percentage)) throw new IllegalArgumentException("Percentage must be between 0 and 100");
         }
         if (values.containsKey(BeerEntry.COLUMN_BEER_IBU)) {

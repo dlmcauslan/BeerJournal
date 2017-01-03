@@ -21,5 +21,6 @@
         <item>@string/stout</item>
         <item>@string/wheat_beer</item>
         <item>@string/other</item>
+
     </string-array>
 </resources>

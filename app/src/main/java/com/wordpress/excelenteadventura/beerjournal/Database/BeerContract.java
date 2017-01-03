@@ -1,4 +1,4 @@
-package com.wordpress.excelenteadventura.beerjournal.Database;
+package com.wordpress.excelenteadventura.beerjournal.database;
 
 import android.content.ContentResolver;
 import android.net.Uri;
@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
 
 public final class BeerContract {
 
-    // To prevent someonce from accidentally instantiating the contract
+    // To prevent someone from accidentally instantiating the contract
     // give it an empty constructor
     private BeerContract() {}
 
@@ -26,7 +26,7 @@ public final class BeerContract {
      */
     public static final class BeerEntry implements BaseColumns {
 
-        public static final Uri Content_Uri = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_BEER);
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_BEER);
 
         // MIME type for list of beers
         public static final String CONTENT_LIST_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/"
@@ -38,6 +38,9 @@ public final class BeerContract {
 
         // Database table name
         public static final String TABLE_NAME = "Beers";
+
+        // Default values
+        public static final String DEAULT_STRING = "Unknown";
 
         // Unique ID number for the beer in the database table
         // Type INTEGER
@@ -77,7 +80,7 @@ public final class BeerContract {
         }
 
         // Checks whether beer percentage is a valid value
-        public static boolean isValidPercentage(float percentage) {
+        public static boolean isValidPercentage(double percentage) {
             if (percentage >= 0 && percentage <= 100) return true;
             return false;
         }

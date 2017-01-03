@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">Beer Journal</string>
     <string name="add_beer_title">Add A Beer</string>
+    <string name="edit_beer_title">Edit Beer</string>
+
+    <!--Options menu strings-->
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -46,11 +51,12 @@
     <string name="dark_lager">Dark Lager</string>
     <string name="sour">Sour Beer</string>
     <string name="beer_not_chosen">---</string>
+    <string name="unknown">Unknown</string>
 
 
     <!-- These are the options displayed in the rating drop-down Spinner -->
     <string-array name="array_rating_options">
-        <item>---</item>
+        <item>@string/beer_not_chosen</item>
         <item>5</item>
         <item>4.5</item>
         <item>4</item>

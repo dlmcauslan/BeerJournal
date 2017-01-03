@@ -18,11 +18,17 @@
         <activity
             android:name=".AddBeerActivity"
             android:label="@string/add_beer_title"
+            android:theme="@style/EditorTheme"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.wordpress.excelenteadventura.beerjournal.MainActivity" />
         </activity>
+
+        <provider
+            android:name=".database.BeerProvider"
+            android:authorities="com.wordpress.excelenteadventura.beerjournal"
+            android:exported="false" />
     </application>
 
 </manifest>
