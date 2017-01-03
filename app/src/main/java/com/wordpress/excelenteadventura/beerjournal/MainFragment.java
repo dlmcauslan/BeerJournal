@@ -2,19 +2,33 @@ package com.wordpress.excelenteadventura.beerjournal;
 
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+
+import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
+    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    // Identifier for the loader
+    private static final int BEER_LOADER = 0;
+
+    // Adapter for the listview
+    BeerCursorAdapter mCursorAdapter;
 
     public MainFragment() {
         // Required empty public constructor
@@ -32,30 +46,57 @@ public class MainFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                // Only launch the GamesInCommonActivity if at least one friend has been selected.
-//                if (!mFriendCompare.isEmpty()) {
                     // Launches AddBeerActivity
-                    Intent intent = new Intent(getActivity(), AddBeerActivity.class);
-//                    // Set data on the intent to be passed through
-//                    intent.putExtra("MainUser", mMainUser);
-//                    // TODO: I don't really like how I've done this, some refactoring could be in order.
-//                    intent.putStringArrayListExtra("FriendsToFind", new ArrayList<String>(mFriendCompare.keySet()));
+                    Intent intent = new Intent(getActivity(), AddBeerActivity.class);;
                     // Start intent
                     startActivity(intent);
-//                } else {
-//                    // Otherwise set a toast to alert the user
-//                    Toast toast = Toast.makeText(getActivity(), "You must choose at least one friend to compare games with!", Toast.LENGTH_SHORT);
-//                    LinearLayout layout = (LinearLayout) toast.getView();
-//                    if (layout.getChildCount() > 0) {
-//                        TextView tv = (TextView) layout.getChildAt(0);
-//                        tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-//                    }
-//                    toast.show();
-//                }
             }
         });
+
+        // Find the listview to be populated with data
+        ListView listView = (ListView) mFragmentView.findViewById(R.id.main_fragment_list_view);
+
+        // Setup an adapter to create a list item for each row of beer data.
+        // There will be no beer data until the loader finishes so pass in null for the cursor.
+        mCursorAdapter = new BeerCursorAdapter(getActivity(), null);
+        listView.setAdapter(mCursorAdapter);
+
+        // Start the loader
+        getLoaderManager().initLoader(BEER_LOADER, null, this);
 
         return mFragmentView;
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Projection specifying the columns we wish to load
+        String[] projection = {BeerEntry._ID,
+                                BeerEntry.COLUMN_BEER_NAME,
+                                BeerEntry.COLUMN_BEER_TYPE,
+                                BeerEntry.COLUMN_BEER_IBU,
+                                BeerEntry.COLUMN_BREWERY_NAME,
+                                BeerEntry.COLUMN_BREWERY_COUNTRY,
+                                BeerEntry.COLUMN_BEER_DATE,
+                                BeerEntry.COLUMN_BEER_PERCENTAGE,
+                                BeerEntry.COLUMN_BEER_RATING,
+                                BeerEntry.COLUMN_BEER_PHOTO};
+
+        // Return the cursorLoader that will execute the content providers query method
+        return new CursorLoader(getActivity(),
+                                BeerEntry.CONTENT_URI,
+                                projection,
+                                null, null, null); // TODO Add some logic to sort the data here.
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Update the cursorAdapter with updated data
+        mCursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // Callback when the data needs to be deleted
+        mCursorAdapter.swapCursor(null);
+    }
 }

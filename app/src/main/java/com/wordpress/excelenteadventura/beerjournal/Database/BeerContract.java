@@ -81,13 +81,13 @@ public final class BeerContract {
 
         // Checks whether beer percentage is a valid value
         public static boolean isValidPercentage(double percentage) {
-            if (percentage >= 0 && percentage <= 100) return true;
+            if (percentage >= -1 && percentage <= 100) return true;
             return false;
         }
 
         // Checks whether bitterness is a valid value
         public static boolean isValidBitterness(int bitterness) {
-            if (bitterness >= 0) return true;
+            if (bitterness >= -1) return true;
             return false;
         }
 

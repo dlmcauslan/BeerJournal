@@ -116,8 +116,8 @@ public class BeerProvider extends ContentProvider {
 //        if (breweryName == null) throw alArgumentException("City required.");
 //        if (country == null) throw new IllegalArgumentException("Country required.");
         if (rating != null && !BeerEntry.isValidRating(rating)) throw new IllegalArgumentException("Beer rating must be between 0 and 5.");
-        if (percentage != null && !BeerEntry.isValidPercentage(percentage)) throw new IllegalArgumentException("Percentage must be between 0 and 100");
-        if (ibu != null && !BeerEntry.isValidBitterness(ibu)) throw new IllegalArgumentException("Beer bitterness must be greater than 0.");
+        if (percentage != null && !BeerEntry.isValidPercentage(percentage)) throw new IllegalArgumentException("Percentage must be between -1 and 100");
+        if (ibu != null && !BeerEntry.isValidBitterness(ibu)) throw new IllegalArgumentException("Beer bitterness must be greater than -1.");
 
         // Don't need to check the other fields, all values are valid, including null.
 
