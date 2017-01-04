@@ -3,6 +3,7 @@ package com.wordpress.excelenteadventura.beerjournal.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry;
 
@@ -11,6 +12,8 @@ import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEn
  */
 
 public class BeerDbHelper extends SQLiteOpenHelper {
+
+    private static final String LOG_TAG = BeerDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "BeerJournal";
     private static final int DATABASE_VERSION = 1;
@@ -31,7 +34,7 @@ public class BeerDbHelper extends SQLiteOpenHelper {
                 + BeerEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + BeerEntry.COLUMN_BEER_NAME + " TEXT NOT NULL, "
                 + BeerEntry.COLUMN_BEER_DATE + " TEXT NOT NULL, "
-                + BeerEntry.COLUMN_BEER_PHOTO + " BLOB, "
+                + BeerEntry.COLUMN_BEER_PHOTO + " TEXT, "
                 + BeerEntry.COLUMN_BEER_TYPE + " TEXT NOT NULL DEFAULT 'Unknown', "
                 + BeerEntry.COLUMN_BEER_RATING + " INTEGER NOT NULL DEFAULT 0, "
                 + BeerEntry.COLUMN_BEER_IBU + " INTEGER NOT NULL DEFAULT -1, "
@@ -44,6 +47,7 @@ public class BeerDbHelper extends SQLiteOpenHelper {
 
         // Execute the SQL statement
         db.execSQL(SQL_CREATE_BEER_TABLE);
+        Log.i(LOG_TAG, BeerEntry.TABLE_NAME + " created.");
     }
 
     /**

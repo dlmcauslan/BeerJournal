@@ -25,7 +25,7 @@ import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEn
  */
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     // Identifier for the loader
     private static final int BEER_LOADER = 0;

@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry;
 
+import java.util.ArrayList;
+
 /**
  * Adapter for the list view that will be used to show the beer summary information on the main
  * page of the app.
@@ -18,6 +20,8 @@ import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEn
  */
 
 public class BeerCursorAdapter extends CursorAdapter{
+
+    private static final String LOG_TAG = BeerCursorAdapter.class.getSimpleName();
 
     public BeerCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
@@ -40,7 +44,12 @@ public class BeerCursorAdapter extends CursorAdapter{
         TextView dateTV = (TextView) view.findViewById(R.id.list_item_date);
         TextView percentageTV = (TextView) view.findViewById(R.id.list_item_percentage);
         TextView ratingTV = (TextView) view.findViewById(R.id.list_item_rating);
-        ImageView beerImage = (ImageView) view.findViewById(R.id.list_item_image);
+        ImageView beerImage = (ImageView) view.findViewById(R.id.beer_list_item_image);
+
+//        int targetW = beerImage.getWidth();
+//        int targetH = beerImage.getHeight();
+//        Log.d(LOG_TAG, "w: " + targetW + ", h: " + targetH);
+
 
         // Find the columns of beer attributes that we're interested in.
         int beerNameColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_NAME);
@@ -60,7 +69,8 @@ public class BeerCursorAdapter extends CursorAdapter{
         String date = cursor.getString(dateColumn);
         String percentage = cursor.getDouble(percentageColumn) + "%";
         String rating = ((double)cursor.getInt(ratingColumn)/2) + "/5";
-        //TODO get image
+        String imageStrings = cursor.getString(imageColumn);
+        ArrayList<String>  photoPaths = Utilities.stringToList(imageStrings);
 
         // TODO add some code to make things look nicer for form fields that haven't been filled out.
 
@@ -71,6 +81,7 @@ public class BeerCursorAdapter extends CursorAdapter{
         dateTV.setText(date);
         percentageTV.setText(percentage);
         ratingTV.setText(rating);
-        // TODO set image
+        // Update the image view
+        Utilities.setThumbnailFromWidth(beerImage, photoPaths.get(0), 144);
     }
 }

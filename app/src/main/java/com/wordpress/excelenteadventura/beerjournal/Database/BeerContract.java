@@ -49,7 +49,7 @@ public final class BeerContract {
         // The table columns
         // Beer name - TEXT
         public static final String COLUMN_BEER_NAME = "Name";
-        // Beer photo - BLOB
+        // Beer photo - String of file locations.
         public static final String COLUMN_BEER_PHOTO = "Photo";
         // Beer type - TEXT
         public static final String COLUMN_BEER_TYPE = "Type";

@@ -5,13 +5,13 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -32,6 +32,9 @@ import android.widget.Toast;
 
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,6 +68,9 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
     private DatePicker mDatePicker;
     private ImageView mBeerImageView;
 
+    // An ArrayList to hold Strings that contain the paths to the photos.
+    private List<String> mPhotoPath = new ArrayList<String>();
+
     // TODO: Possibly set default spinner values here.
 
     // Boolean flag that keeps track of whether the beer has been edited
@@ -81,11 +87,9 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         }
     };
 
-
     public AddBeerFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -97,7 +101,6 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         // Check whether we've launched an addNewBeer or an EditBeer
         Intent intent = getActivity().getIntent();
         mCurrentBeerUri = intent.getData();
-
 
         // This line enables the fragment to handle menu events
         setHasOptionsMenu(true);
@@ -152,12 +155,27 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
                 // Start an intent to open the camera app
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                }
+                    // Create the file where the photo should go
+                    File photoFile = null;
+                    try {
+                        photoFile = Utilities.createImageFile(getContext());
+                        // Get the path for this photo and add it to mPhotoPath arraylist.
+                        mPhotoPath.add(photoFile.getAbsolutePath());
+                        Log.i(LOG_TAG, photoFile.getAbsolutePath());
 
+                    } catch (IOException ex) {
+                        // Error occured whilst creating the file.
+                        Toast.makeText(getActivity(),getString(R.string.photo_save_failed), Toast.LENGTH_SHORT).show();
+                    }
+                    // Continue if the file was successfully created.
+                    if (photoFile != null) {
+                        Uri photoURI = FileProvider.getUriForFile(getActivity(), "com.example.android.fileprovider", photoFile);
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                    }
+                }
             }
         });
-
 
         // TODO: Maybe need to setup spinners here. Will see if they are OK as is.
         // Will probably need to at least set up Beer Type spinner so can pop up a dialog
@@ -166,12 +184,19 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         return mFragment;
     }
 
+    // Code that gets the result of the photograph and adds it to the imageView.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mBeerImageView.setImageBitmap(imageBitmap);
+//            Bundle extras = data.getExtras();
+//            Bitmap imageBitmap = (Bitmap) extras.get("data");
+//            Bitmap imageBitmap = Utilities.loadImage(getContext(), mPhotoPath);
+//            mBeerImageView.setImageBitmap(imageBitmap);
+            // Load the first image in mPhotoPath to mBeerImageView. Note Utilities.setImage scales the image
+            // to reduce memory usage.
+            Utilities.setImage(mBeerImageView, mPhotoPath.get(0));
+            // TODO save a 144W thumbnail of the image to load, so it isn't resized every time its
+            // loaded on the mainFragment.
         }
     }
 
@@ -181,9 +206,6 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         String beerName = mBeerNameEditText.getText().toString().trim();
         String beerType = mBeerTypeSpinner.getSelectedItem().toString();
         String ratingString = mBeerRatingSpinner.getSelectedItem().toString();
-//        int rating = (int) (2*((Float) mBeerRatingSpinner.getSelectedItem())); // This will likely not work
-//        double percentage = Double.parseDouble(mPercentageEditText.getText().toString());
-//        int bitterness = Integer.parseInt();
         String percentageString = mPercentageEditText.getText().toString();
         String bitternessString = mBitternessEditText.getText().toString();
         String breweryName = mBreweryNameEditText.getText().toString().trim();
@@ -195,7 +217,6 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         int month = mDatePicker.getMonth();
         int day = mDatePicker.getDayOfMonth();
         String date = year + "-" + month + "-" + day;
-        // TODO: get image data
 
         // Check that BeerName has an entry. Popup a toast to alert user.
         if (TextUtils.isEmpty(beerName)) {
@@ -215,7 +236,6 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         int rating = 0;
         if (!ratingString.equals("---")) rating = (int) (2 * Double.parseDouble(ratingString));
 
-
         // Create a ContentValues object where the column names are the keys, and the values
         // are from the form fields.
         ContentValues values = new ContentValues();
@@ -230,9 +250,11 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         values.put(BeerEntry.COLUMN_BREWERY_COUNTRY, country);
         values.put(BeerEntry.COLUMN_BEER_COMMENTS, comments);
         values.put(BeerEntry.COLUMN_BEER_DATE, date);
+        values.put(BeerEntry.COLUMN_BEER_PHOTO, Utilities.listToString(mPhotoPath));
 
         Log.d(LOG_TAG, "name: " + beerName + ", rating: " + rating + ", percentage: " + percentage + ", bitterness: "
         + bitterness + ", breweryName: " + breweryName + ", date: " + date);
+        Log.d(LOG_TAG, "IMAGES: " + Utilities.listToString(mPhotoPath));
 
         // Determine if this is a new or existing Beer
         if (mCurrentBeerUri == null) {
@@ -256,6 +278,8 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
     private void deleteBeer() {
         // Only perform the deletion if it is an existing beer
         if (mCurrentBeerUri != null) {
+            // TODO delete images associated with the beer item.
+
             // Call the content resolver to delete the beer from database
             int rowsDeleted = getActivity().getContentResolver().delete(mCurrentBeerUri, null, null);
             // Show a toast message depending on whether or not the delete was successfull
@@ -308,7 +332,6 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     // TODO implement onBAckPressed method
-
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -367,7 +390,8 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             String comments = cursor.getString(commentsColumn);
             double percentage = cursor.getDouble(percentageColumn);
             double rating = ((double)cursor.getInt(ratingColumn)/2);
-            // TODO get image
+            String imageStrings = cursor.getString(imageColumn);
+            mPhotoPath = Utilities.stringToList(imageStrings);
 
             // TODO Handle default values
 
@@ -397,7 +421,8 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             String[] dateArray = date.split("-");
             mDatePicker.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]));
 
-            // TODO: update the image view
+            // Update the image view
+            Utilities.setImage(mBeerImageView, mPhotoPath.get(0));
         }
     }
 
@@ -414,6 +439,8 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         mBitternessEditText.setText("");
         mBeerRatingSpinner.setSelection(0);
         mBeerTypeSpinner.setSelection(0);
+        // TODO set this to some default image.
+        mBeerImageView.setImageBitmap(null);
     }
 
     /**

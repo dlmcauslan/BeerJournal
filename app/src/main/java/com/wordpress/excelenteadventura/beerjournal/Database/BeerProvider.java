@@ -18,7 +18,7 @@ import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEn
 
 public class BeerProvider extends ContentProvider {
 
-    public static final String LOG_TAG = BeerProvider.class.getSimpleName();
+    private static final String LOG_TAG = BeerProvider.class.getSimpleName();
 
     // URI matcher codes for whole table (100) and single beer (101)
     private static final int BEERS = 100;
