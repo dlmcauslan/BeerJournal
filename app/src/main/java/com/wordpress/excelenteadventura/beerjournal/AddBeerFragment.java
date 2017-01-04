@@ -2,6 +2,7 @@ package com.wordpress.excelenteadventura.beerjournal;
 
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -171,7 +173,6 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             return;
         }
 
-
         // Set default values if fields are empty
         if (TextUtils.isEmpty(breweryName)) breweryName = BeerEntry.DEAULT_STRING;
         if (TextUtils.isEmpty(city)) city = BeerEntry.DEAULT_STRING;
@@ -211,8 +212,28 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             if (newUri == null) Toast.makeText(getActivity(), "Insert new beer failed.", Toast.LENGTH_SHORT).show();
             else Toast.makeText(getActivity(), "New beer successfully added to database.", Toast.LENGTH_SHORT).show();
         } else {
-            // TODO code for edit Beer
+            // This is an existing beer entry, so update the database with the new values
+            int rowsAffected = getActivity().getContentResolver().update(mCurrentBeerUri, values, null, null);
+            // Show a toast to let the user know whether the beer was updated successfully
+            if (rowsAffected == 0) Toast.makeText(getActivity(), "Update beer data failed.", Toast.LENGTH_SHORT).show();
+            else Toast.makeText(getActivity(), "Beer data updated successfully.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Deletes the current beer from the database
+     */
+    private void deleteBeer() {
+        // Only perform the deletion if it is an existing beer
+        if (mCurrentBeerUri != null) {
+            // Call the content resolver to delete the beer from database
+            int rowsDeleted = getActivity().getContentResolver().delete(mCurrentBeerUri, null, null);
+            // Show a toast message depending on whether or not the delete was successfull
+            if (rowsDeleted == 0) Toast.makeText(getActivity(), getString(R.string.editor_delete_beer_failed), Toast.LENGTH_SHORT).show();
+            else Toast.makeText(getActivity(), getString(R.string.editor_delete_beer_successful), Toast.LENGTH_SHORT).show();
+        }
+        // Close the activity
+        getActivity().finish();
     }
 
     // Options menu code
@@ -244,7 +265,8 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
                 return true;
             // Click on delete menu option
             case R.id.action_delete:
-                // TODO
+                // Delete beer
+                showDeleteConfirmationDialog();
                 return true;
             // Click on android up button in app bar
             case android.R.id.home:
@@ -362,6 +384,33 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         mBitternessEditText.setText("");
         mBeerRatingSpinner.setSelection(0);
         mBeerTypeSpinner.setSelection(0);
+    }
 
+    /**
+     * Prompts the user to make sure they want to delete the beer.
+     */
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message. And click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.delete_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the delete button so delete Beer
+                deleteBeer();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User clicked the cancel button, so dismiss dialog and continue editing
+                if (dialog != null) dialog.dismiss();
+            }
+        });
+
+        // Create and show the Alert Dialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

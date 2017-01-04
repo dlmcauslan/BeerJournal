@@ -169,15 +169,15 @@ public class BeerProvider extends ContentProvider {
         }
         if (values.containsKey(BeerEntry.COLUMN_BEER_RATING)) {
             Integer rating = values.getAsInteger(BeerEntry.COLUMN_BEER_RATING);
-            if (rating != null && BeerEntry.isValidRating(rating)) throw new IllegalArgumentException("Beer rating must be between 0 and 5.");
+            if (rating != null && !BeerEntry.isValidRating(rating)) throw new IllegalArgumentException("Beer rating must be between 0 and 5.");
         }
         if (values.containsKey(BeerEntry.COLUMN_BEER_PERCENTAGE)) {
             Double percentage = values.getAsDouble(BeerEntry.COLUMN_BEER_PERCENTAGE);
-            if (percentage != null && BeerEntry.isValidPercentage(percentage)) throw new IllegalArgumentException("Percentage must be between 0 and 100");
+            if (percentage != null && !BeerEntry.isValidPercentage(percentage)) throw new IllegalArgumentException("Percentage must be between 0 and 100");
         }
         if (values.containsKey(BeerEntry.COLUMN_BEER_IBU)) {
             Integer ibu = values.getAsInteger(BeerEntry.COLUMN_BEER_IBU);
-            if (ibu != null && BeerEntry.isValidBitterness(ibu)) throw new IllegalArgumentException("Beer bitterness must be greater than 0.");
+            if (ibu != null && !BeerEntry.isValidBitterness(ibu)) throw new IllegalArgumentException("Beer bitterness must be greater than 0.");
         }
 
         // No need to check the other columns because any value is valid.
@@ -224,8 +224,6 @@ public class BeerProvider extends ContentProvider {
         if (rowsDeleted != 0) getContext().getContentResolver().notifyChange(uri, null);
         return rowsDeleted;
     }
-
-
 
     @Override
     public String getType(Uri uri) {
