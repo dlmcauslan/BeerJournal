@@ -5,8 +5,10 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -25,12 +27,15 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -41,6 +46,7 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
     private static final String LOG_TAG = AddBeerActivity.class.getSimpleName();
 
     private static final int EXISTING_BEER_LOADER = 0;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     // Content URI for the existing beer (null if its a new beer)
     private Uri mCurrentBeerUri;
@@ -138,11 +144,35 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
 //        mCommentsEditText.setOnTouchListener(mTouchListener);
 //        mDatePicker.setOnTouchListener(mTouchListener);
 
+        // On click listener for Add Photo text
+        TextView takePhoto = (TextView) mFragment.findViewById(R.id.add_beer_take_photo);
+        takePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start an intent to open the camera app
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }
+
+            }
+        });
+
+
         // TODO: Maybe need to setup spinners here. Will see if they are OK as is.
         // Will probably need to at least set up Beer Type spinner so can pop up a dialog
         // for other beer type.
 
         return mFragment;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mBeerImageView.setImageBitmap(imageBitmap);
+        }
     }
 
     // Saves a beer to the database from the input fields

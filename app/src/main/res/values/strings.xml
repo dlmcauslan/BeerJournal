@@ -28,6 +28,7 @@
     <string name = "add_beer_bitterness">Bitterness</string>
     <string name = "add_beer_IBU">IBU</string>
     <string name="add_beer_button">Add Beer</string>
+    <string name="add_beer_take_photo">TAKE PHOTO</string>
 
     <!--Form hints-->
     <string name = "add_beer_city">City</string>
