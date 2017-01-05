@@ -50,7 +50,7 @@ public class ImagesFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Add intent to open image in gallery here
+                // Opens image in gallery
                 Uri uri =  Uri.fromFile(new File(imagesPath.get(position)));
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
                 String mime = "*/*";

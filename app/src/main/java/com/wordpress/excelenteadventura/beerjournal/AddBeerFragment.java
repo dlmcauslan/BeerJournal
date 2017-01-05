@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -212,12 +213,27 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         mBeerImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO if there is only one photo then go straight to gallery when clicking on image.
+                Intent intent;
+                // If there is only one photo then go straight to gallery when clicking on image.
+                if (mPhotoPath.size() == 1) {
+                    // Opens the image in gallery
+                    Uri uri =  Uri.fromFile(new File(mPhotoPath.get(0)));
+                    intent = new Intent(android.content.Intent.ACTION_VIEW);
+                    String mime = "*/*";
+                    MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
 
-                // Create new intent to go to the AddBeer Activity
-                Intent intent = new Intent(getActivity(), ImagesActivity.class);
-                intent.putStringArrayListExtra("photosExtra", mPhotoPath);
-                intent.putExtra("beerName", mBeerNameEditText.getText().toString().trim());
+                    if (mimeTypeMap.hasExtension(
+                            mimeTypeMap.getFileExtensionFromUrl(uri.toString())))
+                        mime = mimeTypeMap.getMimeTypeFromExtension(
+                                mimeTypeMap.getFileExtensionFromUrl(uri.toString()));
+
+                    intent.setDataAndType(uri, mime);
+                } else {
+                    // Create new intent to go to the AddBeer Activity
+                    intent = new Intent(getActivity(), ImagesActivity.class);
+                    intent.putStringArrayListExtra("photosExtra", mPhotoPath);
+                    intent.putExtra("beerName", mBeerNameEditText.getText().toString().trim());
+                }
                 startActivity(intent);
             }
         });
