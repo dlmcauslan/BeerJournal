@@ -11,10 +11,13 @@ import java.util.ArrayList;
 import static com.wordpress.excelenteadventura.beerjournal.MainFragment.THUMB_LARGE_W;
 
 /**
- * Created by David-local on 1/5/2017.
+ * Created by DLMcAuslan on 1/5/2017.
  */
 
 public class ImageAdapter extends BaseAdapter {
+
+    private static final String LOG_TAG = ImageAdapter.class.getSimpleName();
+
     private Context mContext;
     private ArrayList<String> mImagesPath;
 
@@ -25,7 +28,7 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return mImagesPath.size();
     }
 
     @Override
@@ -45,12 +48,15 @@ public class ImageAdapter extends BaseAdapter {
         if (convertView == null) {
             // if it's not a recycled view, initialize some attributes
             imageView = new ImageView(mContext);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setPadding(0,0,0,0);
         } else {
             imageView = (ImageView) convertView;
         }
 
         // Set image to view
         Utilities.setThumbnailFromWidth(imageView, mImagesPath.get(position), THUMB_LARGE_W);
+//        Log.v(LOG_TAG, mImagesPath.get(position));
 //        Bitmap bitmap = decodeFile(mImagesPath.get(position));
 //        imageView.setImageBitmap(bitmap);
         return imageView;

@@ -212,16 +212,12 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         mBeerImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // TODO if there is only one photo then go straight to gallery when clicking on image.
+
                 // Create new intent to go to the AddBeer Activity
                 Intent intent = new Intent(getActivity(), ImagesActivity.class);
                 intent.putStringArrayListExtra("photosExtra", mPhotoPath);
-
-                // Create the content URI to pass through with the intent which represents the
-//                // Beer item that was clicked on.
-//                Uri currentBeerUri = ContentUris.withAppendedId(BeerEntry.CONTENT_URI,id);
-//
-//                // Set the URI on the data field of the intent and launch the activity
-//                intent.setData(currentBeerUri);
+                intent.putExtra("beerName", mBeerNameEditText.getText().toString().trim());
                 startActivity(intent);
             }
         });
