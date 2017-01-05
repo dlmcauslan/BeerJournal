@@ -192,8 +192,15 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
                     try {
                         photoFile = Utilities.createImageFile(getContext());
                         // Get the path for this photo and add it to mPhotoPath arraylist.
-                        mPhotoPath.add(photoFile.getAbsolutePath());
-                        Log.i(LOG_TAG, photoFile.getAbsolutePath());
+                        if (!mPhotoPath.isEmpty() && mPhotoPath.get(0).isEmpty()){
+                            // If the first photo is empty then replace it.
+                            mPhotoPath.remove(0);
+                            mPhotoPath.add(0, photoFile.getAbsolutePath());
+                            Log.d(LOG_TAG, "Replacing empty photo.");
+                        } else {
+                            mPhotoPath.add(photoFile.getAbsolutePath());
+                        }
+                        Log.i(LOG_TAG, "path: " + photoFile.getAbsolutePath());
 
                     } catch (IOException ex) {
                         // Error occured whilst creating the file.
@@ -214,8 +221,12 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             @Override
             public void onClick(View v) {
                 Intent intent;
+                // If the photo is null or empty then don't pass the intent
+                if (mPhotoPath.isEmpty() || mPhotoPath.get(0).isEmpty()){
+                    return;
+                }
                 // If there is only one photo then go straight to gallery when clicking on image.
-                if (mPhotoPath.size() == 1) {
+                else if (mPhotoPath.size() == 1) {
                     // Opens the image in gallery
                     Uri uri =  Uri.fromFile(new File(mPhotoPath.get(0)));
                     intent = new Intent(android.content.Intent.ACTION_VIEW);
@@ -246,24 +257,14 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-//            Bundle extras = data.getExtras();
-//            Bitmap imageBitmap = (Bitmap) extras.get("data");
-//            Bitmap imageBitmap = Utilities.loadImage(getContext(), mPhotoPath);
-//            mBeerImageView.setImageBitmap(imageBitmap);
-            // Load the first image in mPhotoPath to mBeerImageView. Note Utilities.setImage scales the image
-            // to reduce memory usage.
-//            int desiredThumbnailWidth = 144;
-
-//            Utilities.setImage(mBeerImageView, mPhotoPath.get(0));
+            for (String s : mPhotoPath) {
+                Log.d(LOG_TAG, "path here is: " + s);
+            }
+            // Create a small and large thumbnail of the captured image, then set the large
+            // thumbnail to the imageview.
             Utilities.createThumbnail(mPhotoPath.get(mPhotoPath.size()-1), THUMB_SMALL_W);
             Utilities.createThumbnail(mPhotoPath.get(mPhotoPath.size()-1), THUMB_LARGE_W);
             Utilities.setThumbnailFromWidth(mBeerImageView, mPhotoPath.get(0), THUMB_LARGE_W);
-            // TODO save a 144W thumbnail of the image to load, so it isn't resized every time its
-            // loaded on the mainFragment.
-            // TODO Maybe this should be an Async task.
-//            String[] splitName = mPhotoPath.get(0).split("/");
-//            String fName = splitName[splitName.length-1].split("\\.")[0] + "_thumb144";
-//            Log.d(LOG_TAG, "splitname = " + fName);
         }
     }
 
@@ -524,7 +525,6 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             mDatePicker.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]));
 
             // Update the image view
-//            Utilities.setImage(mBeerImageView, mPhotoPath.get(0));
             Utilities.setThumbnailFromWidth(mBeerImageView, mPhotoPath.get(0), THUMB_LARGE_W);
         }
     }
