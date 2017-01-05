@@ -48,11 +48,6 @@ public class BeerCursorAdapter extends CursorAdapter{
         TextView ratingTV = (TextView) view.findViewById(R.id.list_item_rating);
         ImageView beerImage = (ImageView) view.findViewById(R.id.beer_list_item_image);
 
-//        int targetW = beerImage.getWidth();
-//        int targetH = beerImage.getHeight();
-//        Log.d(LOG_TAG, "w: " + targetW + ", h: " + targetH);
-
-
         // Find the columns of beer attributes that we're interested in.
         int beerNameColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_NAME);
         int beerTypeColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_TYPE);
@@ -66,10 +61,16 @@ public class BeerCursorAdapter extends CursorAdapter{
 
         // Read the beer attributes from the cursor for the current beer
         String beerName = cursor.getString(beerNameColumn);
-        String beerType = cursor.getString(beerTypeColumn) + " - " + cursor.getString(beerIBUColumn) + " IBU";
+        String IBU = cursor.getString(beerIBUColumn);
+        String beerType = cursor.getString(beerTypeColumn);
+        if (!IBU.equals("-1")) beerType += " - " + IBU + " IBU";
         String brewery = cursor.getString(breweryNameColumn) + ", " + cursor.getString(countryColumn);
-        String date = cursor.getString(dateColumn);
-        String percentage = cursor.getDouble(percentageColumn) + "%";
+        String date = formatDate(cursor.getString(dateColumn));
+        Double percentValue = cursor.getDouble(percentageColumn);
+        if (percentValue < 0) {
+            percentValue = 0.0;
+        }
+        String percentage = percentValue + "%";
         String rating = ((double)cursor.getInt(ratingColumn)/2) + "/5";
         String imageStrings = cursor.getString(imageColumn);
         ArrayList<String>  photoPaths = Utilities.stringToList(imageStrings);
@@ -85,5 +86,10 @@ public class BeerCursorAdapter extends CursorAdapter{
         ratingTV.setText(rating);
         // Update the image view
         Utilities.setThumbnailFromWidth(beerImage, photoPaths.get(0), THUMB_SMALL_W);
+    }
+
+    private String formatDate(String date) {
+        String[] dateSplit = date.split("-");
+        return dateSplit[2] + "/" + (Integer.parseInt(dateSplit[1])+1) + "/" + dateSplit[0];
     }
 }

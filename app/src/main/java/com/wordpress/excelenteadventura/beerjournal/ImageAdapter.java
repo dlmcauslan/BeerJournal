@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import static com.wordpress.excelenteadventura.beerjournal.MainFragment.THUMB_LARGE_W;
 
 /**
+ * Adaptor class that sets images to the gridview in the ImagesFragment.
  * Created by DLMcAuslan on 1/5/2017.
  */
 
@@ -56,9 +57,6 @@ public class ImageAdapter extends BaseAdapter {
 
         // Set image to view
         Utilities.setThumbnailFromWidth(imageView, mImagesPath.get(position), THUMB_LARGE_W);
-//        Log.v(LOG_TAG, mImagesPath.get(position));
-//        Bitmap bitmap = decodeFile(mImagesPath.get(position));
-//        imageView.setImageBitmap(bitmap);
         return imageView;
     }
 }

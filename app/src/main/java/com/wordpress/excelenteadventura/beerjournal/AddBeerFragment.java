@@ -184,35 +184,7 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Start an intent to open the camera app
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    // Create the file where the photo should go
-                    File photoFile = null;
-                    try {
-                        photoFile = Utilities.createImageFile(getContext());
-                        // Get the path for this photo and add it to mPhotoPath arraylist.
-                        if (!mPhotoPath.isEmpty() && mPhotoPath.get(0).isEmpty()){
-                            // If the first photo is empty then replace it.
-                            mPhotoPath.remove(0);
-                            mPhotoPath.add(0, photoFile.getAbsolutePath());
-                            Log.d(LOG_TAG, "Replacing empty photo.");
-                        } else {
-                            mPhotoPath.add(photoFile.getAbsolutePath());
-                        }
-                        Log.i(LOG_TAG, "path: " + photoFile.getAbsolutePath());
-
-                    } catch (IOException ex) {
-                        // Error occured whilst creating the file.
-                        Toast.makeText(getActivity(),getString(R.string.photo_save_failed), Toast.LENGTH_SHORT).show();
-                    }
-                    // Continue if the file was successfully created.
-                    if (photoFile != null) {
-                        Uri photoURI = FileProvider.getUriForFile(getActivity(), "com.example.android.fileprovider", photoFile);
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                    }
-                }
+                startCameraIntent();
             }
         });
 
@@ -223,7 +195,7 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
                 Intent intent;
                 // If the photo is null or empty then don't pass the intent
                 if (mPhotoPath.isEmpty() || mPhotoPath.get(0).isEmpty()){
-                    return;
+                    startCameraIntent();
                 }
                 // If there is only one photo then go straight to gallery when clicking on image.
                 else if (mPhotoPath.size() == 1) {
@@ -239,13 +211,14 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
                                 mimeTypeMap.getFileExtensionFromUrl(uri.toString()));
 
                     intent.setDataAndType(uri, mime);
+                    startActivity(intent);
                 } else {
                     // Create new intent to go to the AddBeer Activity
                     intent = new Intent(getActivity(), ImagesActivity.class);
                     intent.putStringArrayListExtra("photosExtra", mPhotoPath);
                     intent.putExtra("beerName", mBeerNameEditText.getText().toString().trim());
+                    startActivity(intent);
                 }
-                startActivity(intent);
             }
         });
 
@@ -253,18 +226,56 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         return mFragment;
     }
 
+    private void startCameraIntent() {
+        // Start an intent to open the camera app
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            // Create the file where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = Utilities.createImageFile(getContext());
+                // Get the path for this photo and add it to mPhotoPath arraylist.
+                if (!mPhotoPath.isEmpty() && mPhotoPath.get(0).isEmpty()){
+                    // If the first photo is empty then replace it.
+                    mPhotoPath.remove(0);
+                    mPhotoPath.add(0, photoFile.getAbsolutePath());
+                    Log.d(LOG_TAG, "Replacing empty photo.");
+                } else {
+                    mPhotoPath.add(photoFile.getAbsolutePath());
+                }
+                Log.i(LOG_TAG, "path: " + photoFile.getAbsolutePath());
+
+            } catch (IOException ex) {
+                // Error occured whilst creating the file.
+                Toast.makeText(getActivity(),getString(R.string.photo_save_failed), Toast.LENGTH_SHORT).show();
+            }
+            // Continue if the file was successfully created.
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getActivity(), "com.example.android.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
     // Code that gets the result of the photograph and adds it to the imageView.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int numPhotos = mPhotoPath.size()-1;
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             for (String s : mPhotoPath) {
                 Log.d(LOG_TAG, "path here is: " + s);
             }
             // Create a small and large thumbnail of the captured image, then set the large
             // thumbnail to the imageview.
-            Utilities.createThumbnail(mPhotoPath.get(mPhotoPath.size()-1), THUMB_SMALL_W);
-            Utilities.createThumbnail(mPhotoPath.get(mPhotoPath.size()-1), THUMB_LARGE_W);
+            Utilities.createThumbnail(mPhotoPath.get(numPhotos), THUMB_SMALL_W);
+            Utilities.createThumbnail(mPhotoPath.get(numPhotos), THUMB_LARGE_W);
             Utilities.setThumbnailFromWidth(mBeerImageView, mPhotoPath.get(0), THUMB_LARGE_W);
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
+            // Otherwise remove the path because the photo was not saved
+            Log.d(LOG_TAG, "resultCode not good, path is" + mPhotoPath.get(numPhotos));
+            mPhotoPath.remove(numPhotos);
+
         }
     }
 
@@ -487,13 +498,18 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
 
             // Update the edit text views with the attributes for the current beer
             mBeerNameEditText.setText(beerName);
+            if(breweryName.equals(BeerEntry.DEAULT_STRING)) breweryName="";
             mBreweryNameEditText.setText(breweryName);
+            if(city.equals(BeerEntry.DEAULT_STRING)) city="";
             mCityEditText.setText(city);
             mStateEditText.setText(state);
+            if(country.equals(BeerEntry.DEAULT_STRING)) country="";
             mCountryEditText.setText(country);
             mCommentsEditText.setText(comments);
-            mPercentageEditText.setText(String.valueOf(percentage));
-            mBitternessEditText.setText(String.valueOf(bitterness));
+            if (percentage < 0) mPercentageEditText.setText("");
+            else mPercentageEditText.setText(String.valueOf(percentage));
+            if (bitterness < 0) mBitternessEditText.setText("");
+            else mBitternessEditText.setText(String.valueOf(bitterness));
 
             // Update the spinners
             // If beertype equals "unknown" set the spinner to ---

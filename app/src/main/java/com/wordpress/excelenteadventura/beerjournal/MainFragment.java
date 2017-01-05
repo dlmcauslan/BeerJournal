@@ -125,7 +125,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         return new CursorLoader(getActivity(),
                                 BeerEntry.CONTENT_URI,
                                 projection,
-                                null, null, null); // TODO Add some logic to sort the data here.
+                                null, null,
+                                BeerEntry.COLUMN_BEER_NAME); // TODO Add some logic to sort the data here.
     }
 
     @Override

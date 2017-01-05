@@ -26,11 +26,20 @@
         <activity
             android:name=".AddBeerActivity"
             android:label="@string/add_beer_title"
+            android:windowSoftInputMode="stateHidden"
             android:parentActivityName=".MainActivity"
             android:theme="@style/EditorTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.wordpress.excelenteadventura.beerjournal.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".ImagesActivity">
+            <!--android:parentActivityName=".AddBeerActivity">-->
+            <!--<meta-data-->
+                <!--android:name="android.support.PARENT_ACTIVITY"-->
+                <!--android:value="com.wordpress.excelenteadventura.beerjournal.AddBeerActivity" />-->
         </activity>
 
         <provider
@@ -49,7 +58,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".ImagesActivity"></activity>
+
     </application>
 
 </manifest>

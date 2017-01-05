@@ -245,21 +245,15 @@
                 android:text="@string/add_beer_date"
                 style="@style/AddBeer_TextStyle"/>
 
-            <DatePicker
-                android:id="@+id/date_picker"
-                android:layout_width="0dp"
-                android:layout_weight="3"
-                android:layout_height="wrap_content"/>
+
 
         </LinearLayout>
 
-
-    <!--<Button-->
-        <!--android:id="@+id/button_add_beer"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="@string/add_beer_button"-->
-        <!--android:layout_gravity="center_horizontal"/>-->
+        <DatePicker
+            android:id="@+id/date_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"/>
 
 
 

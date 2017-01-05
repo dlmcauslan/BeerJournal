@@ -17,7 +17,9 @@ import java.util.ArrayList;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * Fragment containing a gridview that displays all of the photos of the beer that the user has
+ * taken.
+ * Created by DLMcAuslan on 5/1/2017.
  */
 public class ImagesFragment extends Fragment {
 
