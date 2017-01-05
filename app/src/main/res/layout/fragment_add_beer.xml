@@ -85,6 +85,14 @@
 
                 </LinearLayout>
 
+                <EditText
+                    android:id="@+id/edit_beer_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/add_beer_type"
+                    android:inputType="textCapWords"
+                    android:visibility="gone"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

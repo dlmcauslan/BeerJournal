@@ -69,7 +69,7 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
     private ImageView mBeerImageView;
 
     // An ArrayList to hold Strings that contain the paths to the photos.
-    private List<String> mPhotoPath = new ArrayList<String>();
+    private ArrayList<String> mPhotoPath = new ArrayList<String>();
 
     // TODO: Possibly set default spinner values here.
 
@@ -147,6 +147,19 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
 //        mCommentsEditText.setOnTouchListener(mTouchListener);
 //        mDatePicker.setOnTouchListener(mTouchListener);
 
+        // On click listener for beer type spinner to show beer type edit text if other is selected
+        mBeerTypeSpinner.setOnClickListener(new Spinner.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String beerType = mBeerTypeSpinner.getSelectedItem().toString();
+                if (beerType.equals(getString(R.string.other))) {
+                    
+                } else {
+
+                }
+            }
+        });
+
         // On click listener for Add Photo text
         TextView takePhoto = (TextView) mFragment.findViewById(R.id.add_beer_take_photo);
         takePhoto.setOnClickListener(new View.OnClickListener() {
@@ -194,9 +207,16 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
 //            mBeerImageView.setImageBitmap(imageBitmap);
             // Load the first image in mPhotoPath to mBeerImageView. Note Utilities.setImage scales the image
             // to reduce memory usage.
+            int desiredThumbnailWidth = 144;
+
             Utilities.setImage(mBeerImageView, mPhotoPath.get(0));
+            Utilities.createThumbnail(mPhotoPath.get(mPhotoPath.size()-1), desiredThumbnailWidth);
             // TODO save a 144W thumbnail of the image to load, so it isn't resized every time its
             // loaded on the mainFragment.
+            // TODO Maybe this should be an Async task.
+//            String[] splitName = mPhotoPath.get(0).split("/");
+//            String fName = splitName[splitName.length-1].split("\\.")[0] + "_thumb144";
+//            Log.d(LOG_TAG, "splitname = " + fName);
         }
     }
 
