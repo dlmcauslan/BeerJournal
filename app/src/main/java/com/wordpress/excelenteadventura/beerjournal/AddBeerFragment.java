@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -64,6 +65,7 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
     private EditText mCountryEditText;
     private EditText mCommentsEditText;
     private Spinner mBeerTypeSpinner;
+    private EditText mBeerTypeEdit;
     private Spinner mBeerRatingSpinner;
     private DatePicker mDatePicker;
     private ImageView mBeerImageView;
@@ -95,7 +97,7 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View mFragment = inflater.inflate(R.layout.fragment_add_beer, container, false);
+        final View mFragment = inflater.inflate(R.layout.fragment_add_beer, container, false);
 
         // Examine the intent that was used to create this activity.
         // Check whether we've launched an addNewBeer or an EditBeer
@@ -120,6 +122,7 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         mBeerNameEditText = (EditText) mFragment.findViewById(R.id.edit_beer_name);
         mBeerImageView = (ImageView) mFragment.findViewById(R.id.image_beer_photo);
         mBeerTypeSpinner = (Spinner) mFragment.findViewById(R.id.spinner_beer_type);
+        mBeerTypeEdit = (EditText) mFragment.findViewById(R.id.edit_beer_type);
         mBeerRatingSpinner = (Spinner) mFragment.findViewById(R.id.spinner_beer_rating);
         mPercentageEditText = (EditText) mFragment.findViewById(R.id.edit_beer_percentage);
         mBitternessEditText = (EditText) mFragment.findViewById(R.id.edit_beer_bitterness);
@@ -148,17 +151,45 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
 //        mDatePicker.setOnTouchListener(mTouchListener);
 
         // On click listener for beer type spinner to show beer type edit text if other is selected
-        mBeerTypeSpinner.setOnClickListener(new Spinner.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String beerType = mBeerTypeSpinner.getSelectedItem().toString();
-                if (beerType.equals(getString(R.string.other))) {
-                    
-                } else {
+        mBeerTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+
+                String item = mBeerTypeSpinner.getSelectedItem().toString();
+                Log.i("Selected item : ", item);
+                if (item.equals(getString(R.string.other))) {
+                    mBeerTypeEdit.setVisibility(View.VISIBLE);
+                } else {
+                    mBeerTypeEdit.setVisibility(View.GONE);
                 }
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+            }
+
         });
+
+//        mBeerTypeSpinner.setOnClickListener(new Spinner.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//            }
+//
+////            @Override
+////            public void onClick(View v) {
+////                String beerType = mBeerTypeSpinner.getSelectedItem().toString();
+////                // If the selected item is other, set the edit text field to visible, otherwise
+////                // set it to gone.
+////                if (beerType.equals(getString(R.string.other))) {
+////                    mBeerTypeEdit.setVisibility(View.VISIBLE);
+////                } else {
+////                    mBeerTypeEdit.setVisibility(View.GONE);
+////                }
+////            }
+//        });
 
         // On click listener for Add Photo text
         TextView takePhoto = (TextView) mFragment.findViewById(R.id.add_beer_take_photo);
@@ -225,6 +256,10 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         // Read from input fields. Use trim to eliminate excess white space.
         String beerName = mBeerNameEditText.getText().toString().trim();
         String beerType = mBeerTypeSpinner.getSelectedItem().toString();
+        // If beerType is other set beerType to EditText string
+        if (beerType.equals(getString(R.string.other))) {
+            beerType = mBeerTypeEdit.getText().toString().trim();
+        }
         String ratingString = mBeerRatingSpinner.getSelectedItem().toString();
         String percentageString = mPercentageEditText.getText().toString();
         String bitternessString = mBitternessEditText.getText().toString();
@@ -426,10 +461,23 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             mBitternessEditText.setText(String.valueOf(bitterness));
 
             // Update the spinners
-            if (beerType.equals(BeerEntry.DEAULT_STRING)) mBeerTypeSpinner.setSelection(0);
+            // If beertype equals "unknown" set the spinner to ---
+            if (beerType.equals(BeerEntry.DEAULT_STRING)) {
+                mBeerTypeSpinner.setSelection(0);
+            }
+            // If beertype equals something that is not
             else {
                 List<String> typeArray = Arrays.asList(getResources().getStringArray(R.array.array_beer_type_options));
-                mBeerTypeSpinner.setSelection(typeArray.indexOf(beerType));
+                int itemIndex = typeArray.indexOf(beerType);
+                // If itemIndex >=0 set the selection to that item. Otherwise the string is not in the spinner
+                // So set the spinner to other, show the edit text field and set the text.
+                if (itemIndex >= 0) {
+                    mBeerTypeSpinner.setSelection(itemIndex);
+                } else {
+                    mBeerTypeSpinner.setSelection(typeArray.indexOf(getString(R.string.other)));
+                    mBeerTypeEdit.setVisibility(View.VISIBLE);
+                    mBeerTypeEdit.setText(beerType);
+                }
 //                Log.d(LOG_TAG, "type " + beerType + " " + typeArray.indexOf(beerType));
 
             }
