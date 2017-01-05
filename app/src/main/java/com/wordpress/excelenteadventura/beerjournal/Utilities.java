@@ -90,7 +90,9 @@ public final class Utilities {
 
         // Determine how much to scale down the image for the editor screen.
         Log.d(LOG_TAG, "w: " + targetW + ", h: " + targetH + ", w2: " + photoW + ", h2: " + photoH);
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        // To stop crashing do a default scaling of 8 if either targetW or targetH are 0
+        int scaleFactor = 8;
+        if (targetH > 0 && targetW > 0) scaleFactor = Math.min(photoW/targetW, photoH/targetH);
         Log.d(LOG_TAG, "Scale factor: " + scaleFactor);
 
         // Decode the image file into a Bitmap sized to fill the View
@@ -127,7 +129,8 @@ public final class Utilities {
 //        String[] splitName = mPhotoPath.get(0).split("/");
 //        String fName = splitName[splitName.length-1].split("\\.")[0] + "_thumb144";
 
-        String imageName = photoPath.split("\\.jpg")[0] + "_thumb" + desiredWidth + ".jpg";
+//        String imageName = photoPath.split("\\.jpg")[0] + "_thumb" + desiredWidth + ".jpg";
+        String imageName = thumbFilePath(photoPath,desiredWidth);
         Log.d(LOG_TAG, "thumbname = " + imageName);
         try {
 //            foStream = context.openFileOutput(imageName, Context.MODE_PRIVATE);
@@ -143,6 +146,10 @@ public final class Utilities {
         }
     }
 
+
+    public static String thumbFilePath(String filePath, int desiredWidth) {
+        return filePath.split("\\.jpg")[0] + "_thumb" + desiredWidth + ".jpg";
+    }
 
     public static void setThumbnailFromWidth(ImageView imageView, String photoPath, int desiredWidth) {
         // Get the dimensions of the View
@@ -168,7 +175,8 @@ public final class Utilities {
 //        bmOptions.inSampleSize = scaleFactor;
 //        bmOptions.inPurgeable = true;
 
-        String thumbPath = photoPath.split("\\.jpg")[0] + "_thumb" + desiredWidth + ".jpg";
+        String thumbPath = thumbFilePath(photoPath,desiredWidth);
+//        String thumbPath = photoPath.split("\\.jpg")[0] + "_thumb" + desiredWidth + ".jpg";
         Log.d(LOG_TAG, "thumbname = " + thumbPath);
 
         Bitmap bitmap = decodeFile(thumbPath);

@@ -221,10 +221,6 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             }
         });
 
-        // TODO: Maybe need to setup spinners here. Will see if they are OK as is.
-        // Will probably need to at least set up Beer Type spinner so can pop up a dialog
-        // for other beer type.
-
         return mFragment;
     }
 
@@ -334,7 +330,19 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
         // Only perform the deletion if it is an existing beer
         if (mCurrentBeerUri != null) {
             // TODO delete images associated with the beer item.
-
+            for (String fileName : mPhotoPath) {
+                // Delete image
+                File imageFile = new File(fileName);
+                Boolean deleteSuccessful = imageFile.delete();
+                if (deleteSuccessful) Log.v(LOG_TAG, "Delete successful: " + fileName);
+                else Log.v(LOG_TAG, "Delete failed: " + fileName);
+                // Delete thumbnail
+                String thumbFileName = Utilities.thumbFilePath(fileName, 144);
+                File thumbFile = new File(thumbFileName);
+                Boolean thumbDeleteSuccessful = thumbFile.delete();
+                if (thumbDeleteSuccessful) Log.v(LOG_TAG, "Thumbnail delete successful: " + thumbFileName);
+                else Log.v(LOG_TAG, "Thumbnail delete failed: " + thumbFileName);
+            }
             // Call the content resolver to delete the beer from database
             int rowsDeleted = getActivity().getContentResolver().delete(mCurrentBeerUri, null, null);
             // Show a toast message depending on whether or not the delete was successfull
