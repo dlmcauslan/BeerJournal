@@ -40,6 +40,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
+import static com.wordpress.excelenteadventura.beerjournal.MainFragment.THUMB_LARGE_W;
+import static com.wordpress.excelenteadventura.beerjournal.MainFragment.THUMB_SMALL_W;
 
 
 /**
@@ -51,6 +53,8 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
 
     private static final int EXISTING_BEER_LOADER = 0;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+
+
 
     // Content URI for the existing beer (null if its a new beer)
     private Uri mCurrentBeerUri;
@@ -98,6 +102,8 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View mFragment = inflater.inflate(R.layout.fragment_add_beer, container, false);
+
+        Log.v(LOG_TAG, "pixels: " + THUMB_SMALL_W + " " + THUMB_LARGE_W);
 
         // Examine the intent that was used to create this activity.
         // Check whether we've launched an addNewBeer or an EditBeer
@@ -172,25 +178,6 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
 
         });
 
-//        mBeerTypeSpinner.setOnClickListener(new Spinner.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//            }
-//
-////            @Override
-////            public void onClick(View v) {
-////                String beerType = mBeerTypeSpinner.getSelectedItem().toString();
-////                // If the selected item is other, set the edit text field to visible, otherwise
-////                // set it to gone.
-////                if (beerType.equals(getString(R.string.other))) {
-////                    mBeerTypeEdit.setVisibility(View.VISIBLE);
-////                } else {
-////                    mBeerTypeEdit.setVisibility(View.GONE);
-////                }
-////            }
-//        });
-
         // On click listener for Add Photo text
         TextView takePhoto = (TextView) mFragment.findViewById(R.id.add_beer_take_photo);
         takePhoto.setOnClickListener(new View.OnClickListener() {
@@ -221,6 +208,25 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             }
         });
 
+        // On click listener for photo to open imagesActivity
+        mBeerImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create new intent to go to the AddBeer Activity
+                Intent intent = new Intent(getActivity(), ImagesActivity.class);
+                intent.putStringArrayListExtra("photosExtra", mPhotoPath);
+
+                // Create the content URI to pass through with the intent which represents the
+//                // Beer item that was clicked on.
+//                Uri currentBeerUri = ContentUris.withAppendedId(BeerEntry.CONTENT_URI,id);
+//
+//                // Set the URI on the data field of the intent and launch the activity
+//                intent.setData(currentBeerUri);
+                startActivity(intent);
+            }
+        });
+
+
         return mFragment;
     }
 
@@ -234,10 +240,12 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
 //            mBeerImageView.setImageBitmap(imageBitmap);
             // Load the first image in mPhotoPath to mBeerImageView. Note Utilities.setImage scales the image
             // to reduce memory usage.
-            int desiredThumbnailWidth = 144;
+//            int desiredThumbnailWidth = 144;
 
-            Utilities.setImage(mBeerImageView, mPhotoPath.get(0));
-            Utilities.createThumbnail(mPhotoPath.get(mPhotoPath.size()-1), desiredThumbnailWidth);
+//            Utilities.setImage(mBeerImageView, mPhotoPath.get(0));
+            Utilities.createThumbnail(mPhotoPath.get(mPhotoPath.size()-1), THUMB_SMALL_W);
+            Utilities.createThumbnail(mPhotoPath.get(mPhotoPath.size()-1), THUMB_LARGE_W);
+            Utilities.setThumbnailFromWidth(mBeerImageView, mPhotoPath.get(0), THUMB_LARGE_W);
             // TODO save a 144W thumbnail of the image to load, so it isn't resized every time its
             // loaded on the mainFragment.
             // TODO Maybe this should be an Async task.
@@ -336,12 +344,18 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
                 Boolean deleteSuccessful = imageFile.delete();
                 if (deleteSuccessful) Log.v(LOG_TAG, "Delete successful: " + fileName);
                 else Log.v(LOG_TAG, "Delete failed: " + fileName);
-                // Delete thumbnail
-                String thumbFileName = Utilities.thumbFilePath(fileName, 144);
+                // Delete small thumbnail
+                String thumbFileName = Utilities.thumbFilePath(fileName, THUMB_SMALL_W);
                 File thumbFile = new File(thumbFileName);
                 Boolean thumbDeleteSuccessful = thumbFile.delete();
                 if (thumbDeleteSuccessful) Log.v(LOG_TAG, "Thumbnail delete successful: " + thumbFileName);
                 else Log.v(LOG_TAG, "Thumbnail delete failed: " + thumbFileName);
+                // Delete large thumbnail
+                String thumbLargeFileName = Utilities.thumbFilePath(fileName, THUMB_LARGE_W);
+                File thumbLargeFile = new File(thumbLargeFileName);
+                Boolean thumbLargeDeleteSuccessful = thumbFile.delete();
+                if (thumbLargeDeleteSuccessful) Log.v(LOG_TAG, "Thumbnail delete successful: " + thumbLargeFile);
+                else Log.v(LOG_TAG, "Thumbnail delete failed: " + thumbLargeFileName);
             }
             // Call the content resolver to delete the beer from database
             int rowsDeleted = getActivity().getContentResolver().delete(mCurrentBeerUri, null, null);
@@ -498,7 +512,8 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             mDatePicker.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]));
 
             // Update the image view
-            Utilities.setImage(mBeerImageView, mPhotoPath.get(0));
+//            Utilities.setImage(mBeerImageView, mPhotoPath.get(0));
+            Utilities.setThumbnailFromWidth(mBeerImageView, mPhotoPath.get(0), THUMB_LARGE_W);
         }
     }
 

@@ -13,27 +13,27 @@
 
 
     <!--Add beer strings-->
-    <string name = "add_beer_name">Beer Name</string>
-    <string name = "add_beer_type">Beer Type</string>
-    <string name = "add_beer_stats">Beer Stats</string>
-    <string name = "add_beer_brewery">Brewery</string>
-    <string name = "add_beer_brewery_name">Brewery Name</string>
-    <string name = "add_beer_location">Location</string>
-    <string name = "add_beer_comments">Comments</string>
-    <string name = "add_beer_rating">Rating</string>
-    <string name = "add_beer_photo">Photo</string>
-    <string name = "add_beer_date">Date</string>
-    <string name = "add_beer_percentage">Alcohol percentage</string>
-    <string name = "add_beer_percent_symbol">%</string>
-    <string name = "add_beer_bitterness">Bitterness</string>
-    <string name = "add_beer_IBU">IBU</string>
+    <string name="add_beer_name">Beer Name</string>
+    <string name="add_beer_type">Beer Type</string>
+    <string name="add_beer_stats">Beer Stats</string>
+    <string name="add_beer_brewery">Brewery</string>
+    <string name="add_beer_brewery_name">Brewery Name</string>
+    <string name="add_beer_location">Location</string>
+    <string name="add_beer_comments">Comments</string>
+    <string name="add_beer_rating">Rating</string>
+    <string name="add_beer_photo">Photo</string>
+    <string name="add_beer_date">Date</string>
+    <string name="add_beer_percentage">Alcohol percentage</string>
+    <string name="add_beer_percent_symbol">%</string>
+    <string name="add_beer_bitterness">Bitterness</string>
+    <string name="add_beer_IBU">IBU</string>
     <string name="add_beer_button">Add Beer</string>
     <string name="add_beer_take_photo">TAKE PHOTO</string>
 
     <!--Form hints-->
-    <string name = "add_beer_city">City</string>
-    <string name = "add_beer_state">State/Province</string>
-    <string name = "add_beer_country">Country</string>
+    <string name="add_beer_city">City</string>
+    <string name="add_beer_state">State/Province</string>
+    <string name="add_beer_country">Country</string>
 
     <!-- Dialog message when user is leaving editor but hasn't saved changes [CHAR LIMIT=NONE] -->
     <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>

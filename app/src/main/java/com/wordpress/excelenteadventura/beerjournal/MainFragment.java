@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,11 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
+    // Device dimensions for creating thumbnails
+//    public int NUM_PIXELS_W;
+    public static int THUMB_SMALL_W;
+    public static int THUMB_LARGE_W;
+
     // Identifier for the loader
     private static final int BEER_LOADER = 0;
 
@@ -35,12 +41,25 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     public MainFragment() {
         // Required empty public constructor
+
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Set thumbnail sizes
+        int numPixW = getResources().getDisplayMetrics().widthPixels;
+        int numPixH = getResources().getDisplayMetrics().heightPixels;
+        int imageMax = Math.min(numPixH, numPixW);
+        // Set size of small thumbnail to be phones smallest numPixels/5, large thumbnail is smallest
+        // numPixels/2
+        // TODO maybe save these as shared prefs.
+        THUMB_SMALL_W = imageMax/5;
+        THUMB_LARGE_W = imageMax/2;
+
+        Log.v(LOG_TAG, "pixels: " + THUMB_SMALL_W + " " + THUMB_LARGE_W);
+
         // Inflate the layout for this fragment
         View mFragmentView = inflater.inflate(R.layout.fragment_main, container, false);
 

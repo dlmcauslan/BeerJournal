@@ -13,6 +13,8 @@ import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEn
 
 import java.util.ArrayList;
 
+import static com.wordpress.excelenteadventura.beerjournal.MainFragment.THUMB_SMALL_W;
+
 /**
  * Adapter for the list view that will be used to show the beer summary information on the main
  * page of the app.
@@ -82,6 +84,6 @@ public class BeerCursorAdapter extends CursorAdapter{
         percentageTV.setText(percentage);
         ratingTV.setText(rating);
         // Update the image view
-        Utilities.setThumbnailFromWidth(beerImage, photoPaths.get(0), 144);
+        Utilities.setThumbnailFromWidth(beerImage, photoPaths.get(0), THUMB_SMALL_W);
     }
 }

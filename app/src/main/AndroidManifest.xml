@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.wordpress.excelenteadventura.beerjournal">
 
-    <!--Permission required to save images to storage-->
+    <!-- Permission required to save images to storage -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <!--Restricts its usage in the google play store to phones that have cameras-->
-    <uses-feature android:name="android.hardware.camera"
+    <!-- Restricts its usage in the google play store to phones that have cameras -->
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
 
     <application
@@ -25,8 +26,8 @@
         <activity
             android:name=".AddBeerActivity"
             android:label="@string/add_beer_title"
-            android:theme="@style/EditorTheme"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/EditorTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.wordpress.excelenteadventura.beerjournal.MainActivity" />
@@ -37,7 +38,7 @@
             android:authorities="com.wordpress.excelenteadventura.beerjournal"
             android:exported="false" />
 
-        <!--File provider for storing camera images-->
+        <!-- File provider for storing camera images -->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
@@ -45,8 +46,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
+
+        <activity android:name=".ImagesActivity"></activity>
     </application>
 
 </manifest>
