@@ -263,9 +263,9 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         int numPhotos = mPhotoPath.size()-1;
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            for (String s : mPhotoPath) {
-                Log.d(LOG_TAG, "path here is: " + s);
-            }
+//            for (String s : mPhotoPath) {
+//                Log.d(LOG_TAG, "path here is: " + s);
+//            }
             // Create a small and large thumbnail of the captured image, then set the large
             // thumbnail to the imageview.
             Utilities.createThumbnail(mPhotoPath.get(numPhotos), THUMB_SMALL_W);
@@ -273,7 +273,7 @@ public class AddBeerFragment extends Fragment implements LoaderManager.LoaderCal
             Utilities.setThumbnailFromWidth(mBeerImageView, mPhotoPath.get(0), THUMB_LARGE_W);
         } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
             // Otherwise remove the path because the photo was not saved
-            Log.d(LOG_TAG, "resultCode not good, path is" + mPhotoPath.get(numPhotos));
+//            Log.d(LOG_TAG, "resultCode not good, path is" + mPhotoPath.get(numPhotos));
             mPhotoPath.remove(numPhotos);
 
         }

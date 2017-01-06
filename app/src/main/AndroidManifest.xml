@@ -42,6 +42,15 @@
                 <!--android:value="com.wordpress.excelenteadventura.beerjournal.AddBeerActivity" />-->
         </activity>
 
+        <activity
+            android:name=".SortOrderActivity"
+            android:label="@string/action_sort_order">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wordpress.excelenteadventura.beerjournal.MainActivity" />
+        </activity>
+
+
         <provider
             android:name=".database.BeerProvider"
             android:authorities="com.wordpress.excelenteadventura.beerjournal"

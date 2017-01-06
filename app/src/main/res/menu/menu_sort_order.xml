@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/sort_beer_name"
+            android:title="@string/sort_beer_name" />
+        <item android:id="@+id/sort_beer_type"
+            android:title="@string/sort_beer_type" />
+        <item android:id="@+id/sort_beer_location"
+            android:title="@string/sort_beer_location" />
+        <item android:id="@+id/sort_beer_date"
+            android:title="@string/sort_beer_date" />
+        <item android:id="@+id/sort_beer_rating"
+            android:title="@string/sort_beer_rating" />
+        <item android:id="@+id/sort_beer_percentage"
+            android:title="@string/sort_beer_percentage" />
+        <item android:id="@+id/sort_beer_bitterness"
+            android:title="@string/sort_beer_bitterness" />
+    </group>
+</menu>

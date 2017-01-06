@@ -6,6 +6,22 @@
     <!--Options menu strings-->
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
+    <string name="action_sort_order">Sort Order</string>
+    <string name="action_asc_desc">Asc/Desc</string>
+
+    <!--Strings for sort order radio menu-->
+    <string name="sort_beer_name">Beer Name</string>
+    <string name="sort_beer_type">Beer Type</string>
+    <string name="sort_beer_location">Brewery Location</string>
+    <string name="sort_beer_rating">Rating</string>
+    <string name="sort_beer_date">Tasting Date</string>
+    <string name="sort_beer_percentage">Alcohol Percentage</string>
+    <string name="sort_beer_bitterness">Bitterness</string>
+
+    <!--Preferences keys-->
+    <string name="preference_sort_order">sortOrder</string>
+    <string name="preference_sort_asc_desc">ascDesc</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

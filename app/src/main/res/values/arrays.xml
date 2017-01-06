@@ -21,6 +21,18 @@
         <item>@string/stout</item>
         <item>@string/wheat_beer</item>
         <item>@string/other</item>
-
     </string-array>
+
+    <!-- These are types of ways to sort the beer -->
+    <string-array name="array_sort_types">
+        <item>@string/sort_beer_name</item>
+        <item>@string/sort_beer_type</item>
+        <item>@string/sort_beer_location</item>
+        <item>@string/sort_beer_date</item>
+        <item>@string/sort_beer_rating</item>
+        <item>@string/sort_beer_percentage</item>
+        <item>@string/sort_beer_bitterness</item>
+    </string-array>
+
+
 </resources>

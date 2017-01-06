@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/action_sort_order">
+
+    <ListPreference
+        android:key="@string/preference_sort_order"
+        android:title="@string/action_sort_order"
+        android:dialogTitle="@string/action_sort_order"
+        android:entries="@array/array_sort_types"
+        android:entryValues="@array/array_sort_types"
+        android:defaultValue="@string/sort_beer_name" />
+    <!--android:dependency="pref_sync"-->
+
+
+</PreferenceScreen>
