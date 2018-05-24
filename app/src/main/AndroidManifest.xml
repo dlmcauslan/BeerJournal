@@ -16,13 +16,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".AddBeerActivity"
             android:label="@string/add_beer_title"
@@ -34,27 +27,6 @@
                 android:value="com.wordpress.excelenteadventura.beerjournal.MainActivity" />
         </activity>
 
-        <activity
-            android:name=".ImagesActivity">
-            <!--android:parentActivityName=".AddBeerActivity">-->
-            <!--<meta-data-->
-                <!--android:name="android.support.PARENT_ACTIVITY"-->
-                <!--android:value="com.wordpress.excelenteadventura.beerjournal.AddBeerActivity" />-->
-        </activity>
-
-        <activity
-            android:name=".SortOrderActivity"
-            android:label="@string/action_sort_order">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wordpress.excelenteadventura.beerjournal.MainActivity" />
-        </activity>
-
-
-        <provider
-            android:name=".database.BeerProvider"
-            android:authorities="com.wordpress.excelenteadventura.beerjournal"
-            android:exported="false" />
 
         <!-- File provider for storing camera images -->
         <provider
