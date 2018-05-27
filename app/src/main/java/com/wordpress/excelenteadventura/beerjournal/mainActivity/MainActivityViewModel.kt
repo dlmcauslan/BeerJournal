@@ -20,5 +20,4 @@ class MainActivityViewModel(application: Application): AndroidViewModel(applicat
     fun insertBeer(beer: Beer) {
         repository.insertBeer(beer)
     }
-
 }

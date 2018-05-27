@@ -1,6 +1,8 @@
 package com.wordpress.excelenteadventura.beerjournal.mainActivity
 
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -11,6 +13,7 @@ import android.view.*
 import com.wordpress.excelenteadventura.beerjournal.AddBeerActivity
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.SortOrderActivity
+import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import kotlinx.android.synthetic.main.fragment_main.view.*
 
 
@@ -23,8 +26,28 @@ class MainFragment : Fragment() {
     // Sort direction
     private val ASC = true
 
+    private lateinit var mainActivityViewModel: MainActivityViewModel
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
+        // Inflate the layout for this fragment
+        val fragmentView = inflater.inflate(R.layout.fragment_main, container, false)
+
+        // Setup the recycler view
+        val beerListAdapter = BeerListAdapter(context)
+        val recyclerView = fragmentView.main_fragment_recycler_view
+        recyclerView.apply {
+            adapter = beerListAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        // Get a viewmodel and set up the observers
+        mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+        mainActivityViewModel.getAllBeers().observe(this,
+                Observer<List<Beer>> { beers -> beerListAdapter.setBeers(beers!!) }
+        )
+
         // Set thumbnail sizes
         val numPixW = resources.displayMetrics.widthPixels
         val numPixH = resources.displayMetrics.heightPixels
@@ -37,9 +60,6 @@ class MainFragment : Fragment() {
 
         Log.v(LOG_TAG, "pixels: $THUMB_SMALL_W $THUMB_LARGE_W")
 
-        // Inflate the layout for this fragment
-        val fragmentView = inflater.inflate(R.layout.fragment_main, container, false)
-
         // This line enables the fragment to handle menu events
         setHasOptionsMenu(true)
 
@@ -50,14 +70,6 @@ class MainFragment : Fragment() {
             val intent = Intent(activity, AddBeerActivity::class.java)
             // Start intent
             startActivity(intent)
-        }
-
-        // Setup the recycler view
-        val beerListAdapter = BeerListAdapter(context)
-        val recyclerView = fragmentView.main_fragment_recycler_view
-        recyclerView.apply {
-            adapter = beerListAdapter
-            layoutManager = LinearLayoutManager(context)
         }
 
 //        // Setup the list item on click listener. Jumps to editor activity.

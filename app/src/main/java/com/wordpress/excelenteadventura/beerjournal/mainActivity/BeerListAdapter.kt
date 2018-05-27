@@ -2,6 +2,7 @@ package com.wordpress.excelenteadventura.beerjournal.mainActivity
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,6 +58,7 @@ class BeerListAdapter(val context: Context) : RecyclerView.Adapter<BeerListAdapt
 
     fun setBeers(beers: List<Beer>) {
         this.beers = beers
+        Log.d("BeerListAdapter", "BeerList, size ${beers.size}: $beers")
         notifyDataSetChanged()
     }
 
@@ -68,7 +70,8 @@ class BeerListAdapter(val context: Context) : RecyclerView.Adapter<BeerListAdapt
 
     private fun formatDate(date: String): String {
         val dateSplit = date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        return dateSplit[2] + "/" + (Integer.parseInt(dateSplit[1]) + 1) + "/" + dateSplit[0]
+        return if (dateSplit.size == 2) dateSplit[2] + "/" + (Integer.parseInt(dateSplit[1]) + 1) + "/" + dateSplit[0]
+        else date
     }
 }
 
