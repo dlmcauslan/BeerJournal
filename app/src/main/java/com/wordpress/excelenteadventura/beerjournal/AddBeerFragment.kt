@@ -1,6 +1,7 @@
 package com.wordpress.excelenteadventura.beerjournal
 
 
+import android.app.Activity.RESULT_OK
 import android.content.ContentValues
 import android.content.Intent
 import android.database.Cursor
@@ -15,29 +16,13 @@ import android.support.v4.content.Loader
 import android.support.v7.app.AlertDialog
 import android.text.TextUtils
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.MimeTypeMap
-import android.widget.AdapterView
-import android.widget.DatePicker
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
-
+import android.widget.*
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry
-
 import java.io.File
 import java.io.IOException
-import java.util.ArrayList
-import java.util.Arrays
-
-import android.app.Activity.RESULT_OK
+import java.util.*
 
 
 /**
@@ -84,7 +69,7 @@ class AddBeerFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
         // Inflate the layout for this fragment
         val fragment = inflater.inflate(R.layout.fragment_add_beer, container, false)
 
-        Log.v(LOG_TAG, "pixels: " + Companion.getTHUMB_SMALL_W() + " " + Companion.getTHUMB_LARGE_W())
+//        Log.v(LOG_TAG, "pixels: " + Companion.getTHUMB_SMALL_W() + " " + Companion.getTHUMB_LARGE_W())
 
         // Examine the intent that was used to create this activity.
         // Check whether we've launched an addNewBeer or an EditBeer
@@ -174,10 +159,10 @@ class AddBeerFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
                 var mime: String? = "*/*"
                 val mimeTypeMap = MimeTypeMap.getSingleton()
 
-                if (mimeTypeMap.hasExtension(
-                                mimeTypeMap.getFileExtensionFromUrl(uri.toString())))
-                    mime = mimeTypeMap.getMimeTypeFromExtension(
-                            mimeTypeMap.getFileExtensionFromUrl(uri.toString()))
+//                if (mimeTypeMap.hasExtension(
+//                                mimeTypeMap.getFileExtensionFromUrl(uri.toString())))
+//                    mime = mimeTypeMap.getMimeTypeFromExtension(
+//                            mimeTypeMap.getFileExtensionFromUrl(uri.toString()))
 
                 intent.setDataAndType(uri, mime)
                 startActivity(intent)
@@ -236,9 +221,9 @@ class AddBeerFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
             //            }
             // Create a small and large thumbnail of the captured image, then set the large
             // thumbnail to the imageview.
-            Utilities.createThumbnail(mPhotoPath[numPhotos], Companion.getTHUMB_SMALL_W())
-            Utilities.createThumbnail(mPhotoPath[numPhotos], Companion.getTHUMB_LARGE_W())
-            Utilities.setThumbnailFromWidth(mBeerImageView!!, mPhotoPath[0], Companion.getTHUMB_LARGE_W())
+//            Utilities.createThumbnail(mPhotoPath[numPhotos], Companion.getTHUMB_SMALL_W())
+//            Utilities.createThumbnail(mPhotoPath[numPhotos], Companion.getTHUMB_LARGE_W())
+//            Utilities.setThumbnailFromWidth(mBeerImageView!!, mPhotoPath[0], Companion.getTHUMB_LARGE_W())
         } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
             // Otherwise remove the path because the photo was not saved
             //            Log.d(LOG_TAG, "resultCode not good, path is" + mPhotoPath.get(numPhotos));
@@ -343,21 +328,21 @@ class AddBeerFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
                 else
                     Log.v(LOG_TAG, "Delete failed: $fileName")
                 // Delete small thumbnail
-                val thumbFileName = Utilities.thumbFilePath(fileName, Companion.getTHUMB_SMALL_W())
-                val thumbFile = File(thumbFileName)
-                val thumbDeleteSuccessful = thumbFile.delete()
-                if (thumbDeleteSuccessful)
-                    Log.v(LOG_TAG, "Thumbnail delete successful: $thumbFileName")
-                else
-                    Log.v(LOG_TAG, "Thumbnail delete failed: $thumbFileName")
-                // Delete large thumbnail
-                val thumbLargeFileName = Utilities.thumbFilePath(fileName, Companion.getTHUMB_LARGE_W())
-                val thumbLargeFile = File(thumbLargeFileName)
-                val thumbLargeDeleteSuccessful = thumbFile.delete()
-                if (thumbLargeDeleteSuccessful)
-                    Log.v(LOG_TAG, "Thumbnail delete successful: $thumbLargeFile")
-                else
-                    Log.v(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
+//                val thumbFileName = Utilities.thumbFilePath(fileName, Companion.getTHUMB_SMALL_W())
+//                val thumbFile = File(thumbFileName)
+//                val thumbDeleteSuccessful = thumbFile.delete()
+//                if (thumbDeleteSuccessful)
+//                    Log.v(LOG_TAG, "Thumbnail delete successful: $thumbFileName")
+//                else
+//                    Log.v(LOG_TAG, "Thumbnail delete failed: $thumbFileName")
+//                // Delete large thumbnail
+//                val thumbLargeFileName = Utilities.thumbFilePath(fileName, Companion.getTHUMB_LARGE_W())
+//                val thumbLargeFile = File(thumbLargeFileName)
+//                val thumbLargeDeleteSuccessful = thumbFile.delete()
+//                if (thumbLargeDeleteSuccessful)
+//                    Log.v(LOG_TAG, "Thumbnail delete successful: $thumbLargeFile")
+//                else
+//                    Log.v(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
             }
             // Call the content resolver to delete the beer from database
             val rowsDeleted = activity.contentResolver.delete(currentBeerUri!!, null, null)
@@ -508,7 +493,7 @@ class AddBeerFragment : Fragment(), LoaderManager.LoaderCallbacks<Cursor> {
             mDatePicker!!.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]))
 
             // Update the image view
-            Utilities.setThumbnailFromWidth(mBeerImageView!!, mPhotoPath[0], Companion.getTHUMB_LARGE_W())
+//            Utilities.setThumbnailFromWidth(mBeerImageView!!, mPhotoPath[0], Companion.getTHUMB_LARGE_W())
         }
     }
 

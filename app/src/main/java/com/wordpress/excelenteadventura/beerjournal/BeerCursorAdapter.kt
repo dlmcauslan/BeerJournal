@@ -8,12 +8,7 @@ import android.view.ViewGroup
 import android.widget.CursorAdapter
 import android.widget.ImageView
 import android.widget.TextView
-
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry
-
-import java.util.ArrayList
-
-import com.wordpress.excelenteadventura.beerjournal.MainFragment.THUMB_SMALL_W
 
 /**
  * Adapter for the list view that will be used to show the beer summary information on the main
@@ -21,7 +16,7 @@ import com.wordpress.excelenteadventura.beerjournal.MainFragment.THUMB_SMALL_W
  * Created by DLMcAuslan on 1/3/2017.
  */
 
-class BeerCursorAdapter(context: Context, c: Cursor) : CursorAdapter(context, c, 0) {
+class BeerCursorAdapter(context: Context, c: Cursor?) : CursorAdapter(context, c, 0) {
 
     override fun newView(context: Context, cursor: Cursor, parent: ViewGroup): View {
         // Inflate a list item view
@@ -77,7 +72,7 @@ class BeerCursorAdapter(context: Context, c: Cursor) : CursorAdapter(context, c,
         percentageTV.text = percentage
         ratingTV.text = rating
         // Update the image view
-        Utilities.setThumbnailFromWidth(beerImage, photoPaths[0], Companion.getTHUMB_SMALL_W())
+//        Utilities.setThumbnailFromWidth(beerImage, photoPaths[0], Companion.getTHUMB_SMALL_W())
     }
 
     private fun formatDate(date: String): String {

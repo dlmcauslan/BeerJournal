@@ -5,10 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
-
-import java.util.ArrayList
-
-import com.wordpress.excelenteadventura.beerjournal.MainFragment.THUMB_LARGE_W
+import java.util.*
 
 /**
  * Adaptor class that sets images to the gridview in the ImagesFragment.
@@ -42,7 +39,7 @@ class ImageAdapter(private val mContext: Context, private val mImagesPath: Array
         }
 
         // Set image to view
-        Utilities.setThumbnailFromWidth(imageView, mImagesPath[position], Companion.getTHUMB_LARGE_W())
+//        Utilities.setThumbnailFromWidth(imageView, mImagesPath[position], Companion.getTHUMB_LARGE_W())
         return imageView
     }
 

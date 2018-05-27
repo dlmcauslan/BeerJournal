@@ -20,8 +20,8 @@ buildscript {
 }
 
 ext {
-    roomVersion = '1.0.0'
-    archLifecycleVersion = '1.1.0'
+    roomVersion = '1.1.0'
+    archLifecycleVersion = '1.1.1'
 }
 
 allprojects {

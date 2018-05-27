@@ -11,9 +11,7 @@ import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.AdapterView
 import android.widget.GridView
-
 import java.io.File
-import java.util.ArrayList
 
 
 /**
@@ -47,10 +45,10 @@ class ImagesFragment : Fragment() {
             val intent = Intent(android.content.Intent.ACTION_VIEW)
             var mime: String? = "*/*"
             val mimeTypeMap = MimeTypeMap.getSingleton()
-            if (mimeTypeMap.hasExtension(
-                            mimeTypeMap.getFileExtensionFromUrl(uri.toString())))
-                mime = mimeTypeMap.getMimeTypeFromExtension(
-                        mimeTypeMap.getFileExtensionFromUrl(uri.toString()))
+//            if (mimeTypeMap.hasExtension(
+//                            mimeTypeMap.getFileExtensionFromUrl(uri.toString())))
+//                mime = mimeTypeMap.getMimeTypeFromExtension(
+//                        mimeTypeMap.getFileExtensionFromUrl(uri.toString()))
             intent.setDataAndType(uri, mime)
             startActivity(intent)
         }
