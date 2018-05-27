@@ -14,7 +14,7 @@ abstract class BeerDataBase: RoomDatabase() {
     companion object {
         private var INSTANCE: BeerDataBase? = null
 
-        fun getInstance(context: Context): BeerDataBase? {
+        fun getDatabase(context: Context): BeerDataBase {
             if (INSTANCE == null) {
                 synchronized(BeerDataBase::class) {
                     // Create the database
@@ -23,12 +23,7 @@ abstract class BeerDataBase: RoomDatabase() {
                             "beer.db").build()
                 }
             }
-            return INSTANCE
+            return INSTANCE!!
         }
-
-        fun destroyInstance() {
-            INSTANCE = null
-        }
-
     }
 }
