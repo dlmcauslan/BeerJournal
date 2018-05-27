@@ -1,5 +1,6 @@
 package com.wordpress.excelenteadventura.beerjournal.database
 
+import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
@@ -9,7 +10,7 @@ import android.arch.persistence.room.Update
 interface BeerDao {
 
     @Query("select * from beer_table")
-    fun getAllBeers(): List<Beer>
+    fun getAllBeers(): LiveData<List<Beer>>
 
     @Query("select * from beer_table where id = :id")
     fun getBeerById(id: Long): Beer
