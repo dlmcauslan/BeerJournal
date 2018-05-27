@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,10 +10,11 @@
     android:paddingTop="8dp"
     tools:context="com.wordpress.excelenteadventura.beerjournal.mainActivity.MainFragment">
 
-    <ListView
-        android:id="@+id/main_fragment_list_view"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/main_fragment_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:listitem="@layout/beer_adaptor_list_item"/>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -26,8 +28,6 @@
         app:fabSize="normal"
         app:backgroundTint="@color/colorAccent"
         app:elevation="4dp"
-        />
-
-
+        android:focusable="true" />
 
 </RelativeLayout>
