@@ -20,11 +20,11 @@
             android:name=".AddBeerActivity"
             android:label="@string/add_beer_title"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".mainActivity.MainActivity"
             android:theme="@style/EditorTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wordpress.excelenteadventura.beerjournal.MainActivity" />
+                android:value="com.wordpress.excelenteadventura.beerjournal.mainActivity.MainActivity" />
         </activity>
 
 

@@ -4,10 +4,10 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wordpress.excelenteadventura.beerjournal.MainActivity">
+    tools:context="com.wordpress.excelenteadventura.beerjournal.mainActivity.MainActivity">
 
     <fragment
-        android:name="com.wordpress.excelenteadventura.beerjournal.MainFragment"
+        android:name="com.wordpress.excelenteadventura.beerjournal.mainActivity.MainFragment"
         android:id="@+id/fragment_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

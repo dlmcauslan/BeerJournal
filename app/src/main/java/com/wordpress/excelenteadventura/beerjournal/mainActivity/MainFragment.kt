@@ -1,4 +1,4 @@
-package com.wordpress.excelenteadventura.beerjournal
+package com.wordpress.excelenteadventura.beerjournal.mainActivity
 
 
 import android.content.ContentUris
@@ -15,6 +15,10 @@ import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ListView
+import com.wordpress.excelenteadventura.beerjournal.AddBeerActivity
+import com.wordpress.excelenteadventura.beerjournal.BeerCursorAdapter
+import com.wordpress.excelenteadventura.beerjournal.R
+import com.wordpress.excelenteadventura.beerjournal.SortOrderActivity
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract.BeerEntry
 
 

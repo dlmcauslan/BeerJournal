@@ -12,8 +12,8 @@ import com.wordpress.excelenteadventura.beerjournal.database.BeerDataBase
  * the UI
  */
 class BeerRepository(application: Application) {
-    private var beerDao: BeerDao
-    private var beers: LiveData<List<Beer>>
+    private val beerDao: BeerDao
+    private val beers: LiveData<List<Beer>>
 
     init {
         val db = BeerDataBase.getDatabase(application)
@@ -21,6 +21,7 @@ class BeerRepository(application: Application) {
         beers = beerDao.getAllBeers()
     }
 
+    // TODO: is this necessary or just make beers public
     fun getAllBeers(): LiveData<List<Beer>> {
         return beers
     }
