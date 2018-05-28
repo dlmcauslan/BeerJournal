@@ -1,4 +1,4 @@
-package com.wordpress.excelenteadventura.beerjournal.mainActivity
+package com.wordpress.excelenteadventura.beerjournal.ui.mainActivity
 
 
 import android.arch.lifecycle.Observer
@@ -10,11 +10,13 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
-import com.wordpress.excelenteadventura.beerjournal.AddBeerActivity
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.SortOrderActivity
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
-import kotlinx.android.synthetic.main.fragment_main.view.*
+import com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity
+import kotlinx.android.synthetic.main.fragment_main.*
+
+
 
 
 /**
@@ -36,7 +38,7 @@ class MainFragment : Fragment() {
 
         // Setup the recycler view
         val beerListAdapter = BeerListAdapter(context)
-        val recyclerView = fragmentView.main_fragment_recycler_view
+        val recyclerView = main_fragment_recycler_view
         recyclerView.apply {
             adapter = beerListAdapter
             layoutManager = LinearLayoutManager(context)
@@ -64,12 +66,10 @@ class MainFragment : Fragment() {
         setHasOptionsMenu(true)
 
         // Setup Floating Action Button to open next activity
-        val fab = fragmentView.floatingActionButton
-        fab.setOnClickListener {
+        floating_action_button.setOnClickListener {
             // Launches AddBeerActivity
             val intent = Intent(activity, AddBeerActivity::class.java)
-            // Start intent
-            startActivity(intent)
+            startActivityForResult(intent, NEW_BEER_ACTIVITY_REQUEST_CODE)
         }
 
 //        // Setup the list item on click listener. Jumps to editor activity.
@@ -88,6 +88,20 @@ class MainFragment : Fragment() {
 
         return fragmentView
     }
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if (requestCode == NEW_BEER_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+//            val beer = Word(data!!.getStringExtra(NewWordActivity.EXTRA_REPLY))
+//            mWordViewModel.insert(word)
+//        } else {
+//            Toast.makeText(
+//                    getApplicationContext(),
+//                    R.string.empty_not_saved,
+//                    Toast.LENGTH_LONG).show()
+//        }
+//    }
 
     // Options menu code
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -122,6 +136,8 @@ class MainFragment : Fragment() {
     }
 
     companion object {
+        const val NEW_BEER_ACTIVITY_REQUEST_CODE = 1
+
         // Device dimensions for creating thumbnails
         var THUMB_SMALL_W: Int = 0
         var THUMB_LARGE_W: Int = 0

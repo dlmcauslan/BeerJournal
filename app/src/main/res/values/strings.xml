@@ -3,6 +3,8 @@
     <string name="add_beer_title">Add A Beer</string>
     <string name="edit_beer_title">Edit Beer</string>
 
+    <string name="default_field_string">Unknown</string>
+
     <!--Options menu strings-->
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>

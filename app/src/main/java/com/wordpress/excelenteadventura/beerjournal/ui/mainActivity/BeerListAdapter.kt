@@ -1,4 +1,4 @@
-package com.wordpress.excelenteadventura.beerjournal.mainActivity
+package com.wordpress.excelenteadventura.beerjournal.ui.mainActivity
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView

@@ -16,21 +16,21 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".mainActivity.MainActivity" >
+        <activity android:name="com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddBeerActivity"
+            android:name="com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity"
             android:label="@string/add_beer_title"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".mainActivity.MainActivity"
+            android:parentActivityName="com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainActivity"
             android:theme="@style/EditorTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wordpress.excelenteadventura.beerjournal.mainActivity.MainActivity" />
+                android:value="com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainActivity" />
         </activity>
 
 
