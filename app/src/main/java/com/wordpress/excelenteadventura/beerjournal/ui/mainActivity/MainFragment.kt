@@ -36,7 +36,7 @@ class MainFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_main, container, false)
 
         // Setup the recycler view
-        val beerListAdapter = BeerListAdapter(context)
+        val beerListAdapter = BeerListAdapter(context, beerItemClickListener)
         val recyclerView = fragmentView.main_fragment_recycler_view
         recyclerView.apply {
             adapter = beerListAdapter
@@ -69,39 +69,24 @@ class MainFragment : Fragment() {
         fragmentView.floating_action_button.setOnClickListener {
             // Launches AddBeerActivity
             val intent = Intent(activity, AddBeerActivity::class.java)
-            startActivityForResult(intent, NEW_BEER_ACTIVITY_REQUEST_CODE)
+            intent.putExtra(BEER_ID, -1L)
+            startActivity(intent)
         }
-
-//        // Setup the list item on click listener. Jumps to editor activity.
-//        recyclerView.onItemClickListener = AdapterView.OnItemClickListener { _, _, _, id ->
-//            // Create new intent to go to the AddBeer Activity
-//            val intent = Intent(activity, AddBeerActivity::class.java)
-//
-//            // Create the content URI to pass through with the intent which represents the
-//            // Beer item that was clicked on.
-//            val currentBeerUri = ContentUris.withAppendedId(BeerEntry.CONTENT_URI, id)
-//
-//            // Set the URI on the data field of the intent and launch the activity
-//            intent.data = currentBeerUri
-//            startActivity(intent)
-//        }
 
         return fragmentView
     }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        if (requestCode == NEW_BEER_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-//            val beer = Word(data!!.getStringExtra(NewWordActivity.EXTRA_REPLY))
-//            mWordViewModel.insert(word)
-//        } else {
-//            Toast.makeText(
-//                    getApplicationContext(),
-//                    R.string.empty_not_saved,
-//                    Toast.LENGTH_LONG).show()
-//        }
-//    }
+    // On Click listener for the recycler view.
+    private val beerItemClickListener = object : BeerListAdapter.OnItemClickListener {
+        override fun onItemClick(item: Beer) {
+            // Create new intent to go to the AddBeer Activity
+            val intent = Intent(activity, AddBeerActivity::class.java)
+
+            // Launch the activity
+            intent.putExtra(BEER_ID, item.id)
+            startActivity(intent)
+        }
+    }
 
     // Options menu code
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -137,6 +122,7 @@ class MainFragment : Fragment() {
 
     companion object {
         const val NEW_BEER_ACTIVITY_REQUEST_CODE = 1
+        const val BEER_ID = "com.wordpress.excelenteadventura.beerjournal.BeerID"
 
         // Device dimensions for creating thumbnails
         var THUMB_SMALL_W: Int = 0

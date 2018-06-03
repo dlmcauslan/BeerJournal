@@ -9,4 +9,12 @@ class AddBeerViewModel(private val repository: BeerRepository): ViewModel() {
     fun insertBeer(beer: Beer) {
         repository.insertBeer(beer)
     }
+
+    fun updateBeer(beer: Beer) {
+        repository.updateBeer(beer)
+    }
+
+    fun getBeerById(id: Long): Beer {
+        return repository.getBeerById(id)
+    }
 }

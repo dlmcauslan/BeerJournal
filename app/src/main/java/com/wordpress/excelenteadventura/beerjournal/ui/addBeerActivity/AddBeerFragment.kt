@@ -19,6 +19,7 @@ import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
+import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.BEER_ID
 import kotlinx.android.synthetic.main.fragment_add_beer.view.*
 import java.io.File
 import java.io.IOException
@@ -34,7 +35,7 @@ class AddBeerFragment : Fragment() {
     private lateinit var viewModel: AddBeerViewModel
 
     // Content URI for the existing beer (null if its a new beer)
-    private var currentBeerUri: Uri? = null
+    private var beerId: Long = -1L
 
     // Data edit fields
     private lateinit var nameEdit: EditText
@@ -55,17 +56,6 @@ class AddBeerFragment : Fragment() {
     private var photoPath = ArrayList<String>()
 
     // TODO: Possibly set default spinner values here.
-
-    // Boolean flag that keeps track of whether the beer has been edited
-    private var beerChanged: Boolean? = false
-
-    // OnTouchListener that listens for whether user touches a view, meaning the data
-    // has most likely been changed.
-    // Changes beerChanged flag.
-    private val mTouchListener = View.OnTouchListener { _, _ ->
-        beerChanged = true
-        false
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -94,35 +84,16 @@ class AddBeerFragment : Fragment() {
         // Examine the intent that was used to create this activity.
         // Check whether we've launched an addNewBeer or an EditBeer
         val intent = activity.intent
-        currentBeerUri = intent.data
+        beerId = intent.getLongExtra(BEER_ID, -1)
 
         // This line enables the fragment to handle menu events
         setHasOptionsMenu(true)
         // If the intent does not contain a Beer content URI then we are adding a new beer
-        if (currentBeerUri == null) {
+        if (beerId == -1L) {
             activity.title = getString(R.string.add_beer_title)
             // Invalidate the options menu, so the delete option isn't shown
             activity.invalidateOptionsMenu()
-        } else {
-            activity.title = getString(R.string.edit_beer_title)
-        }
-
-        // Setup OnTouchListeners on all of the inputfields so we can determine if they have
-        // been modified. This can be used to let the user know if they try to leave the editor
-        // without saving changes.
-        // TODO make this work
-        //        nameEdit.setOnTouchListener(mTouchListener);
-        //        beerImageView.setOnTouchListener(mTouchListener);
-        //        typeSpinner.setOnTouchListener(mTouchListener);
-        //        ratingSpinner.setOnTouchListener(mTouchListener);
-        //        percentageEdit.setOnTouchListener(mTouchListener);
-        //        bitternessEdit.setOnTouchListener(mTouchListener);
-        //        breweryNameEdit.setOnTouchListener(mTouchListener);
-        //        cityEdit.setOnTouchListener(mTouchListener);
-        //        stateEdit.setOnTouchListener(mTouchListener);
-        //        countryEdit.setOnTouchListener(mTouchListener);
-        //        commentsEdit.setOnTouchListener(mTouchListener);
-        //        datePicker.setOnTouchListener(mTouchListener);
+        } else activity.title = getString(R.string.edit_beer_title)
 
         // On click listener for beer type spinner to show beer type edit text if other is selected
         typeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -145,35 +116,38 @@ class AddBeerFragment : Fragment() {
         takePhoto.setOnClickListener { startCameraIntent() }
 
         // On click listener for photo to open imagesActivity
-        beerImageView.setOnClickListener {
-            val intent: Intent
-            // If the photo is null or empty then don't pass the intent
-            if (photoPath.isEmpty() || photoPath[0].isEmpty()) {
-                startCameraIntent()
-            } else if (photoPath.size == 1) {
-                // Opens the image in gallery
-                val uri = Uri.fromFile(File(photoPath[0]))
-                intent = Intent(android.content.Intent.ACTION_VIEW)
-                var mime: String? = "*/*"
-                val mimeTypeMap = MimeTypeMap.getSingleton()
+        beerImageView.setOnClickListener{ beerImageClickListener }
+
+        return fragment
+    }
+
+    private val beerImageClickListener = { _: View ->
+
+        val intent: Intent
+        // If the photo is null or empty then don't pass the intent
+        if (photoPath.isEmpty() || photoPath[0].isEmpty()) {
+            startCameraIntent()
+        } else if (photoPath.size == 1) {
+            // Opens the image in gallery
+            val uri = Uri.fromFile(File(photoPath[0]))
+            intent = Intent(android.content.Intent.ACTION_VIEW)
+            var mime: String? = "*/*"
+            val mimeTypeMap = MimeTypeMap.getSingleton()
 
 //                if (mimeTypeMap.hasExtension(
 //                                mimeTypeMap.getFileExtensionFromUrl(uri.toString())))
 //                    mime = mimeTypeMap.getMimeTypeFromExtension(
 //                            mimeTypeMap.getFileExtensionFromUrl(uri.toString()))
 
-                intent.setDataAndType(uri, mime)
-                startActivity(intent)
-            } else {
-                // Create new intent to go to the AddBeer Activity
-                intent = Intent(activity, ImagesActivity::class.java)
-                intent.putStringArrayListExtra("photosExtra", photoPath)
-                intent.putExtra("nameEdit", nameEdit.text.toString().trim { it <= ' ' })
-                startActivity(intent)
-            }// If there is only one photo then go straight to gallery when clicking on image.
-        }
-
-        return fragment
+            intent.setDataAndType(uri, mime)
+            startActivity(intent)
+        } else {
+            // Create new intent to go to the AddBeer Activity
+            intent = Intent(activity, ImagesActivity::class.java)
+            intent.putStringArrayListExtra("photosExtra", photoPath)
+            intent.putExtra("nameEdit", nameEdit.text.toString().trim { it <= ' ' })
+            startActivity(intent)
+        }// If there is only one photo then go straight to gallery when clicking on image.
     }
 
     private fun startCameraIntent() {
@@ -271,15 +245,16 @@ class AddBeerFragment : Fragment() {
                 + bitterness + ", breweryName: " + breweryName + ", date: " + date)
         Log.d(LOG_TAG, "IMAGES: " + Utilities.listToString(photoPath))
 
-        val replyIntent = Intent()
+//        val replyIntent = Intent()
 //        replyIntent.putExtra(EXTRA_REPLY, beer)
 //        setResult(RESULT_OK, replyIntent)
 
 //         Determine if this is a new or existing Beer
         // Add a new beer
-        viewModel.insertBeer(beer)
+        if (beerId == -1L) viewModel.insertBeer(beer)
+        else viewModel.updateBeer(beer)
 
-//        if (currentBeerUri == null) {
+//        if (beerId == null) {
 //            // Add a new beer
 //            val newUri = activity.contentResolver.insert(BeerEntry.CONTENT_URI, values)
 //            // Show a toast message depending on whether or not the insertion was successful
@@ -289,7 +264,7 @@ class AddBeerFragment : Fragment() {
 //                Toast.makeText(activity, "New beer successfully added to database.", Toast.LENGTH_SHORT).show()
 //        } else {
 //            // This is an existing beer entry, so update the database with the new values
-//            val rowsAffected = activity.contentResolver.update(currentBeerUri!!, values, null, null)
+//            val rowsAffected = activity.contentResolver.update(beerId!!, values, null, null)
 //            // Show a toast to let the user know whether the beer was updated successfully
 //            if (rowsAffected == 0)
 //                Toast.makeText(activity, "Update beer data failed.", Toast.LENGTH_SHORT).show()
@@ -303,7 +278,7 @@ class AddBeerFragment : Fragment() {
      */
     private fun deleteBeer() {
         // Only perform the deletion if it is an existing beer
-        if (currentBeerUri != null) {
+        if (beerId >= 0) {
             // TODO delete images associated with the beer item.
             for (fileName in photoPath) {
                 // Delete image
@@ -331,12 +306,12 @@ class AddBeerFragment : Fragment() {
 //                    Log.v(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
             }
             // Call the content resolver to delete the beer from database
-            val rowsDeleted = activity.contentResolver.delete(currentBeerUri!!, null, null)
-            // Show a toast message depending on whether or not the delete was successfull
-            if (rowsDeleted == 0)
-                Toast.makeText(activity, getString(R.string.editor_delete_beer_failed), Toast.LENGTH_SHORT).show()
-            else
-                Toast.makeText(activity, getString(R.string.editor_delete_beer_successful), Toast.LENGTH_SHORT).show()
+//            val rowsDeleted = activity.contentResolver.delete(beerId, null, null)
+//            // Show a toast message depending on whether or not the delete was successfull
+//            if (rowsDeleted == 0)
+//                Toast.makeText(activity, getString(R.string.editor_delete_beer_failed), Toast.LENGTH_SHORT).show()
+//            else
+//                Toast.makeText(activity, getString(R.string.editor_delete_beer_successful), Toast.LENGTH_SHORT).show()
         }
         // Close the activity
         activity.finish()
@@ -351,7 +326,7 @@ class AddBeerFragment : Fragment() {
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
         // If it is a new beer, hide the Delete menu item.
-        if (currentBeerUri == null) {
+        if (beerId == -1L) {
             val menuItem = menu!!.findItem(R.id.action_delete)
             menuItem.isVisible = false
         }

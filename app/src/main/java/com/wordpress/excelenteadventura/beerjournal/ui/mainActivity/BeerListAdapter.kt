@@ -19,9 +19,13 @@ import kotlinx.android.synthetic.main.beer_adaptor_list_item.view.*
  * Created by DLMcAuslan on 1/3/2017.
  */
 
-class BeerListAdapter(val context: Context) : RecyclerView.Adapter<BeerListAdapter.BeerViewHolder>() {
+class BeerListAdapter(val context: Context, private val listener: OnItemClickListener) : RecyclerView.Adapter<BeerListAdapter.BeerViewHolder>() {
 
     private var beers: List<Beer> = arrayListOf()
+
+    interface OnItemClickListener {
+        fun onItemClick(item: Beer)
+    }
 
     class BeerViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView) {
         val beerName: TextView = itemView.list_item_beer_name
@@ -31,6 +35,23 @@ class BeerListAdapter(val context: Context) : RecyclerView.Adapter<BeerListAdapt
         val percentageView: TextView = itemView.list_item_percentage
         val rating: TextView = itemView.list_item_rating
         val beerImage: ImageView = itemView.beer_list_item_image
+
+        fun bind(beer: Beer, listener: OnItemClickListener) {
+            beerName.text = beer.name
+            val ibuString =  if (beer.bitterness > 0) " - ${beer.bitterness} IBU" else ""
+            beerType.text = "${beer.type}${ibuString}"
+            brewery.text = "${beer.brewery}, ${beer.country}"
+            dateView.text = formatDate(beer.date)
+            percentageView.text = if (beer.percentage >= 0) "${beer.percentage}%" else "0.0%"
+            rating.text = "${beer.rating/2}/5"
+            itemView.setOnClickListener { listener.onItemClick(beer) }
+        }
+
+        private fun formatDate(date: String): String {
+            val dateSplit = date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            return if (dateSplit.size == 2) dateSplit[2] + "/" + (Integer.parseInt(dateSplit[1]) + 1) + "/" + dateSplit[0]
+            else date
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BeerViewHolder {
@@ -39,17 +60,7 @@ class BeerListAdapter(val context: Context) : RecyclerView.Adapter<BeerListAdapt
 
     override fun onBindViewHolder(holder: BeerViewHolder, position: Int) {
         if (beers.isNotEmpty()) {
-            val beer = beers[position]
-            holder.apply {
-                beerName.text = beer.name
-                val ibuString =  if (beer.bitterness > 0) " - ${beer.bitterness} IBU" else ""
-                beerType.text = "${beer.type}${ibuString}"
-                brewery.text = "${beer.brewery}, ${beer.country}"
-                dateView.text = formatDate(beer.date)
-                percentageView.text = if (beer.percentage >= 0) "${beer.percentage}%" else "0.0%"
-                rating.text = "${beer.rating/2}/5"
-            }
-
+            holder.bind(beers[position], listener)
         } else {
             // Covers the case of data not being ready yet.
             holder.beerName.text = "No Beer"
@@ -66,12 +77,6 @@ class BeerListAdapter(val context: Context) : RecyclerView.Adapter<BeerListAdapt
     // mWords has not been updated (means initially, it's null, and we can't return null).
     override fun getItemCount(): Int {
         return beers.size
-    }
-
-    private fun formatDate(date: String): String {
-        val dateSplit = date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        return if (dateSplit.size == 2) dateSplit[2] + "/" + (Integer.parseInt(dateSplit[1]) + 1) + "/" + dateSplit[0]
-        else date
     }
 }
 
