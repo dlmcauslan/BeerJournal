@@ -15,9 +15,7 @@ import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.SortOrderActivity
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity
-import kotlinx.android.synthetic.main.fragment_main.*
-
-
+import kotlinx.android.synthetic.main.fragment_main.view.*
 
 
 /**
@@ -39,7 +37,7 @@ class MainFragment : Fragment() {
 
         // Setup the recycler view
         val beerListAdapter = BeerListAdapter(context)
-        val recyclerView = main_fragment_recycler_view
+        val recyclerView = fragmentView.main_fragment_recycler_view
         recyclerView.apply {
             adapter = beerListAdapter
             layoutManager = LinearLayoutManager(context)
@@ -68,7 +66,7 @@ class MainFragment : Fragment() {
         setHasOptionsMenu(true)
 
         // Setup Floating Action Button to open next activity
-        floating_action_button.setOnClickListener {
+        fragmentView.floating_action_button.setOnClickListener {
             // Launches AddBeerActivity
             val intent = Intent(activity, AddBeerActivity::class.java)
             startActivityForResult(intent, NEW_BEER_ACTIVITY_REQUEST_CODE)

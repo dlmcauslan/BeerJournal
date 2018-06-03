@@ -19,7 +19,7 @@ import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
-import kotlinx.android.synthetic.main.fragment_add_beer.*
+import kotlinx.android.synthetic.main.fragment_add_beer.view.*
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -37,19 +37,19 @@ class AddBeerFragment : Fragment() {
     private var currentBeerUri: Uri? = null
 
     // Data edit fields
-    private val nameEdit: EditText by lazy { edit_beer_name }
-    private val percentageEdit: EditText by lazy { edit_beer_percentage }
-    private val bitternessEdit: EditText by lazy { edit_beer_bitterness }
-    private val breweryNameEdit: EditText by lazy { edit_brewery_name }
-    private val cityEdit: EditText by lazy { edit_city }
-    private val stateEdit: EditText by lazy { edit_state }
-    private val countryEdit: EditText by lazy { edit_country }
-    private val commentsEdit: EditText by lazy { edit_beer_comments }
-    private val typeSpinner: Spinner by lazy { spinner_beer_type }
-    private val typeEdit: EditText by lazy { edit_beer_type}
-    private val ratingSpinner: Spinner by lazy { spinner_beer_rating }
-    private val datePicker: DatePicker by lazy { date_picker }
-    private val beerImageView: ImageView by lazy { image_beer_photo }
+    private lateinit var nameEdit: EditText
+    private lateinit var percentageEdit: EditText
+    private lateinit var bitternessEdit: EditText
+    private lateinit var breweryNameEdit: EditText
+    private lateinit var cityEdit: EditText
+    private lateinit var stateEdit: EditText
+    private lateinit var countryEdit: EditText
+    private lateinit var commentsEdit: EditText
+    private lateinit var typeSpinner: Spinner
+    private lateinit var typeEdit: EditText
+    private lateinit var ratingSpinner: Spinner
+    private lateinit var datePicker: DatePicker
+    private lateinit var beerImageView: ImageView
 
     // An ArrayList to hold Strings that contain the paths to the photos.
     private var photoPath = ArrayList<String>()
@@ -71,6 +71,19 @@ class AddBeerFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val fragment = inflater.inflate(R.layout.fragment_add_beer, container, false)
+        nameEdit = fragment.edit_beer_name
+        percentageEdit = fragment.edit_beer_percentage
+        bitternessEdit = fragment.edit_beer_bitterness
+        breweryNameEdit = fragment.edit_brewery_name
+        cityEdit = fragment.edit_city
+        stateEdit = fragment.edit_state
+        countryEdit = fragment.edit_country
+        commentsEdit = fragment.edit_beer_comments
+        typeSpinner = fragment.spinner_beer_type
+        typeEdit = fragment.edit_beer_type
+        ratingSpinner = fragment.spinner_beer_rating
+        datePicker = fragment.date_picker
+        beerImageView = fragment.image_beer_photo
 
         // Setup View Model
         val factory = InjectorUtils.provideAddBeerViewModelFactory(activity)
@@ -128,7 +141,7 @@ class AddBeerFragment : Fragment() {
         }
 
         // On click listener for Add Photo text
-        val takePhoto = add_beer_take_photo
+        val takePhoto = fragment.add_beer_take_photo
         takePhoto.setOnClickListener { startCameraIntent() }
 
         // On click listener for photo to open imagesActivity
