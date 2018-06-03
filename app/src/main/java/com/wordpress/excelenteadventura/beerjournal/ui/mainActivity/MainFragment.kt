@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
+import com.wordpress.excelenteadventura.beerjournal.BeerRepository
 import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.SortOrderActivity
@@ -27,7 +28,8 @@ class MainFragment : Fragment() {
     // Sort direction
     private val ASC = true
 
-    private lateinit var mainActivityViewModel: MainViewModel
+    private lateinit var viewModel: MainViewModel
+    private lateinit var repository: BeerRepository
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -45,10 +47,13 @@ class MainFragment : Fragment() {
 
         // Get a viewmodel and set up the observers
         val factory = InjectorUtils.provideMainActivityViewModelFactory(activity)
-        mainActivityViewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
-        mainActivityViewModel.getAllBeers().observe(this,
+        viewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
+        viewModel.beers.observe(this,
                 Observer<List<Beer>> { beers -> beerListAdapter.setBeers(beers!!) }
         )
+
+        // Setup the repository
+        repository = InjectorUtils.provideRepository(activity)
 
         // Set thumbnail sizes
         val numPixW = resources.displayMetrics.widthPixels
@@ -67,10 +72,10 @@ class MainFragment : Fragment() {
 
         // Setup Floating Action Button to open next activity
         fragmentView.floating_action_button.setOnClickListener {
+            // Set current beer to null
+            repository.currentBeer.value = null
             // Launches AddBeerActivity
-            val intent = Intent(activity, AddBeerActivity::class.java)
-            intent.putExtra(BEER_ID, -1L)
-            startActivity(intent)
+            startActivity(Intent(activity, AddBeerActivity::class.java))
         }
 
         return fragmentView
@@ -79,12 +84,11 @@ class MainFragment : Fragment() {
     // On Click listener for the recycler view.
     private val beerItemClickListener = object : BeerListAdapter.OnItemClickListener {
         override fun onItemClick(item: Beer) {
-            // Create new intent to go to the AddBeer Activity
-            val intent = Intent(activity, AddBeerActivity::class.java)
+            // Set the current beer
+            repository.currentBeer.value = item
 
-            // Launch the activity
-            intent.putExtra(BEER_ID, item.id)
-            startActivity(intent)
+            // Create new intent to go to the AddBeer Activity
+            startActivity(Intent(activity, AddBeerActivity::class.java))
         }
     }
 

@@ -1,6 +1,7 @@
 package com.wordpress.excelenteadventura.beerjournal
 
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
 import android.util.Log
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
@@ -11,16 +12,9 @@ import com.wordpress.excelenteadventura.beerjournal.database.BeerDao
  * the UI
  */
 class BeerRepository private constructor(private val beerDao: BeerDao) {
-    private val beers: LiveData<List<Beer>> = beerDao.getAllBeers()
 
-    // TODO: is this necessary or just make beers public
-    fun getAllBeers(): LiveData<List<Beer>> {
-        return beers
-    }
-
-    fun getBeerById(id: Long): Beer {
-        return beerDao.getBeerById(id)
-    }
+    val beers: LiveData<List<Beer>> = beerDao.getAllBeers()
+    val currentBeer: MutableLiveData<Beer?> = MutableLiveData()
 
     fun insertBeer(beer: Beer) {
         InsertAsyncTask(beerDao).execute(beer)

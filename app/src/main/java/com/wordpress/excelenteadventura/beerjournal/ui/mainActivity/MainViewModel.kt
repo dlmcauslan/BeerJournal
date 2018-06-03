@@ -7,11 +7,6 @@ import com.wordpress.excelenteadventura.beerjournal.database.Beer
 
 class MainViewModel(repository: BeerRepository): ViewModel() {
 
-    private val beers: LiveData<List<Beer>> = repository.getAllBeers()
+    val beers: LiveData<List<Beer>> = repository.beers
 
-    // TODO: is this function necessary or make beers public
-    // Also var or val for livedata...
-    fun getAllBeers(): LiveData<List<Beer>> {
-        return beers
-    }
 }

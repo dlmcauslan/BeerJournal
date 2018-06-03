@@ -10,7 +10,7 @@ import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainViewMode
  */
 object InjectorUtils {
 
-    private fun provideRepository(context: Context): BeerRepository {
+    fun provideRepository(context: Context): BeerRepository {
         val database =  BeerDataBase.getDatabase(context.applicationContext)
         return BeerRepository.getInstance(database.beerDao())
     }

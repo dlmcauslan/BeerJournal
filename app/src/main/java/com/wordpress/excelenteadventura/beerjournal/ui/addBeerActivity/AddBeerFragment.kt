@@ -2,6 +2,7 @@ package com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity
 
 
 import android.app.Activity.RESULT_OK
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
@@ -19,7 +20,7 @@ import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
-import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.BEER_ID
+import com.wordpress.excelenteadventura.beerjournal.database.BeerContract
 import kotlinx.android.synthetic.main.fragment_add_beer.view.*
 import java.io.File
 import java.io.IOException
@@ -34,8 +35,8 @@ class AddBeerFragment : Fragment() {
     // View Model
     private lateinit var viewModel: AddBeerViewModel
 
-    // Content URI for the existing beer (null if its a new beer)
-    private var beerId: Long = -1L
+    // Current beer
+    private var currentBeer: Beer? = null
 
     // Data edit fields
     private lateinit var nameEdit: EditText
@@ -78,18 +79,18 @@ class AddBeerFragment : Fragment() {
         // Setup View Model
         val factory = InjectorUtils.provideAddBeerViewModelFactory(activity)
         viewModel = ViewModelProviders.of(this, factory).get(AddBeerViewModel::class.java)
+        viewModel.currentBeer.observe(this,
+                Observer { beer ->
+                    currentBeer = beer
+                    populateUI(beer) }
+        )
 
 //        Log.v(LOG_TAG, "pixels: " + Companion.getTHUMB_SMALL_W() + " " + Companion.getTHUMB_LARGE_W())
-
-        // Examine the intent that was used to create this activity.
-        // Check whether we've launched an addNewBeer or an EditBeer
-        val intent = activity.intent
-        beerId = intent.getLongExtra(BEER_ID, -1)
 
         // This line enables the fragment to handle menu events
         setHasOptionsMenu(true)
         // If the intent does not contain a Beer content URI then we are adding a new beer
-        if (beerId == -1L) {
+        if (currentBeer == null) {
             activity.title = getString(R.string.add_beer_title)
             // Invalidate the options menu, so the delete option isn't shown
             activity.invalidateOptionsMenu()
@@ -99,7 +100,6 @@ class AddBeerFragment : Fragment() {
         typeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(arg0: AdapterView<*>, arg1: View, arg2: Int, arg3: Long) {
-
                 val item = typeSpinner.selectedItem.toString()
                 Log.i("Selected item : ", item)
                 typeEdit.visibility = (if (item == getString(R.string.other)) View.VISIBLE else View.GONE)
@@ -119,6 +119,64 @@ class AddBeerFragment : Fragment() {
         beerImageView.setOnClickListener{ beerImageClickListener }
 
         return fragment
+    }
+
+    private fun populateUI(beer: Beer?) {
+//            // TODO Handle default values
+        beer?.let {
+            // Update the edit text views with the attributes for the current beer
+            nameEdit.setText(beer.name)
+//            if (breweryName == BeerEntry.DEAULT_STRING) breweryName = ""
+            breweryNameEdit.setText(beer.brewery)
+//            if (city == BeerEntry.DEAULT_STRING) city = ""
+            cityEdit.setText(beer.city)
+            stateEdit.setText(beer.state)
+//            if (country == BeerEntry.DEAULT_STRING) country = ""
+            countryEdit.setText(beer.country)
+            commentsEdit.setText(beer.comments)
+            val percentage = beer.percentage
+            if (percentage < 0)
+                percentageEdit.setText("")
+            else
+                percentageEdit.setText(percentage.toString())
+            val bitterness = beer.bitterness
+            if (bitterness < 0)
+                bitternessEdit.setText("")
+            else
+                bitternessEdit.setText(bitterness.toString())
+
+            // Update the spinners
+            // If beertype equals "unknown" set the spinner to ---
+            val beerType = beer.type
+            if (beerType == BeerContract.BeerEntry.DEAULT_STRING) {
+                typeSpinner.setSelection(0)
+            } else {
+                val typeArray = Arrays.asList(*resources.getStringArray(R.array.array_beer_type_options))
+                val itemIndex = typeArray.indexOf(beerType)
+                // If itemIndex >=0 set the selection to that item. Otherwise the string is not in the spinner
+                // So set the spinner to other, show the edit text field and set the text.
+                if (itemIndex >= 0) {
+                    typeSpinner.setSelection(itemIndex)
+                } else {
+                    typeSpinner.setSelection(typeArray.indexOf(getString(R.string.other)))
+                    typeEdit.visibility = View.VISIBLE
+                    typeEdit.setText(beerType)
+                }
+                //                Log.d(LOG_TAG, "type " + beerType + " " + typeArray.indexOf(beerType));
+
+            }// If beertype equals something that is not
+            val ratingArray = Arrays.asList(*resources.getStringArray(R.array.array_rating_options))
+            val rating = beer.rating.toDouble() / 2
+            ratingSpinner.setSelection(ratingArray.indexOf(rating.toString()))
+            //            Log.d(LOG_TAG, "rating " + String.valueOf(rating));
+
+            // Update the date picker
+            val dateArray = beer.date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            datePicker.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]))
+        }
+
+        // Update the image view
+//            Utilities.setThumbnailFromWidth(beerImageView!!, photoPath[0], Companion.getTHUMB_LARGE_W())
     }
 
     private val beerImageClickListener = { _: View ->
@@ -251,26 +309,8 @@ class AddBeerFragment : Fragment() {
 
 //         Determine if this is a new or existing Beer
         // Add a new beer
-        if (beerId == -1L) viewModel.insertBeer(beer)
+        if (currentBeer == null) viewModel.insertBeer(beer)
         else viewModel.updateBeer(beer)
-
-//        if (beerId == null) {
-//            // Add a new beer
-//            val newUri = activity.contentResolver.insert(BeerEntry.CONTENT_URI, values)
-//            // Show a toast message depending on whether or not the insertion was successful
-//            if (newUri == null)
-//                Toast.makeText(activity, "Insert new beer failed.", Toast.LENGTH_SHORT).show()
-//            else
-//                Toast.makeText(activity, "New beer successfully added to database.", Toast.LENGTH_SHORT).show()
-//        } else {
-//            // This is an existing beer entry, so update the database with the new values
-//            val rowsAffected = activity.contentResolver.update(beerId!!, values, null, null)
-//            // Show a toast to let the user know whether the beer was updated successfully
-//            if (rowsAffected == 0)
-//                Toast.makeText(activity, "Update beer data failed.", Toast.LENGTH_SHORT).show()
-//            else
-//                Toast.makeText(activity, "Beer data updated successfully.", Toast.LENGTH_SHORT).show()
-//        }
     }
 
     /**
@@ -278,7 +318,7 @@ class AddBeerFragment : Fragment() {
      */
     private fun deleteBeer() {
         // Only perform the deletion if it is an existing beer
-        if (beerId >= 0) {
+        currentBeer?.let {
             // TODO delete images associated with the beer item.
             for (fileName in photoPath) {
                 // Delete image
@@ -326,7 +366,7 @@ class AddBeerFragment : Fragment() {
     override fun onPrepareOptionsMenu(menu: Menu?) {
         super.onPrepareOptionsMenu(menu)
         // If it is a new beer, hide the Delete menu item.
-        if (beerId == -1L) {
+        if (currentBeer == null) {
             val menuItem = menu!!.findItem(R.id.action_delete)
             menuItem.isVisible = false
         }
@@ -360,96 +400,6 @@ class AddBeerFragment : Fragment() {
 
     // TODO implement onBAckPressed method
 
-
-//    override fun onLoadFinished(loader: Loader<Cursor>, cursor: Cursor?) {
-//        // Bail early if the cursor is null or there is less than 1 row in the cursor
-//        if (cursor == null || cursor.count < 1) return
-//
-//        // Move to the first row of the cursor (should be only row) and read data from it
-//        if (cursor.moveToFirst()) {
-//            // Get the data columns we're interested in
-//            val beerNameColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_NAME)
-//            val beerTypeColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_TYPE)
-//            val beerIBUColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_IBU)
-//            val breweryNameColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_NAME)
-//            val cityColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_CITY)
-//            val stateColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_STATE)
-//            val countryColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_COUNTRY)
-//            val dateColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_DATE)
-//            val percentageColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_PERCENTAGE)
-//            val ratingColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_RATING)
-//            val commentsColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_COMMENTS)
-//            val imageColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_PHOTO)
-//
-//            // Read the beer attributes from the cursor for the current beer
-//            val beerName = cursor.getString(beerNameColumn)
-//            val beerType = cursor.getString(beerTypeColumn)
-//            val bitterness = cursor.getInt(beerIBUColumn)
-//            var breweryName = cursor.getString(breweryNameColumn)
-//            var city = cursor.getString(cityColumn)
-//            val state = cursor.getString(stateColumn)
-//            var country = cursor.getString(countryColumn)
-//            val date = cursor.getString(dateColumn)
-//            val comments = cursor.getString(commentsColumn)
-//            val percentage = cursor.getDouble(percentageColumn)
-//            val rating = cursor.getInt(ratingColumn).toDouble() / 2
-//            val imageStrings = cursor.getString(imageColumn)
-//            photoPath = Utilities.stringToList(imageStrings)
-//
-//            // TODO Handle default values
-//
-//            // Update the edit text views with the attributes for the current beer
-//            this.nameEdit!!.setText(beerName)
-//            if (breweryName == BeerEntry.DEAULT_STRING) breweryName = ""
-//            breweryNameEdit!!.setText(breweryName)
-//            if (city == BeerEntry.DEAULT_STRING) city = ""
-//            cityEdit!!.setText(city)
-//            stateEdit!!.setText(state)
-//            if (country == BeerEntry.DEAULT_STRING) country = ""
-//            countryEdit!!.setText(country)
-//            commentsEdit!!.setText(comments)
-//            if (percentage < 0)
-//                percentageEdit!!.setText("")
-//            else
-//                percentageEdit!!.setText(percentage.toString())
-//            if (bitterness < 0)
-//                bitternessEdit!!.setText("")
-//            else
-//                bitternessEdit!!.setText(bitterness.toString())
-//
-//            // Update the spinners
-//            // If beertype equals "unknown" set the spinner to ---
-//            if (beerType == BeerEntry.DEAULT_STRING) {
-//                typeSpinner!!.setSelection(0)
-//            } else {
-//                val typeArray = Arrays.asList(*resources.getStringArray(R.array.array_beer_type_options))
-//                val itemIndex = typeArray.indexOf(beerType)
-//                // If itemIndex >=0 set the selection to that item. Otherwise the string is not in the spinner
-//                // So set the spinner to other, show the edit text field and set the text.
-//                if (itemIndex >= 0) {
-//                    typeSpinner!!.setSelection(itemIndex)
-//                } else {
-//                    typeSpinner!!.setSelection(typeArray.indexOf(getString(R.string.other)))
-//                    typeEdit!!.visibility = View.VISIBLE
-//                    typeEdit!!.setText(beerType)
-//                }
-//                //                Log.d(LOG_TAG, "type " + beerType + " " + typeArray.indexOf(beerType));
-//
-//            }// If beertype equals something that is not
-//            val ratingArray = Arrays.asList(*resources.getStringArray(R.array.array_rating_options))
-//            ratingSpinner!!.setSelection(ratingArray.indexOf(rating.toString()))
-//            //            Log.d(LOG_TAG, "rating " + String.valueOf(rating));
-//
-//            // Update the date picker
-//            val dateArray = date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-//            datePicker!!.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]))
-//
-//            // Update the image view
-////            Utilities.setThumbnailFromWidth(beerImageView!!, photoPath[0], Companion.getTHUMB_LARGE_W())
-//        }
-//    }
-//
-
     /**
      * Prompts the user to make sure they want to delete the beer.
      */
@@ -481,3 +431,4 @@ class AddBeerFragment : Fragment() {
         internal const val REQUEST_IMAGE_CAPTURE = 1
     }
 }
+
