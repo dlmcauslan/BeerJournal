@@ -2,6 +2,7 @@ package com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity
 
 
 import android.app.Activity.RESULT_OK
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,8 +15,8 @@ import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.*
 import com.wordpress.excelenteadventura.beerjournal.ImagesActivity
+import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
-import com.wordpress.excelenteadventura.beerjournal.R.id.*
 import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import kotlinx.android.synthetic.main.fragment_add_beer.*
@@ -28,6 +29,9 @@ import java.util.*
  * A simple [Fragment] subclass.
  */
 class AddBeerFragment : Fragment() {
+
+    // View Model
+    private lateinit var viewModel: AddBeerViewModel
 
     // Content URI for the existing beer (null if its a new beer)
     private var currentBeerUri: Uri? = null
@@ -67,6 +71,10 @@ class AddBeerFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val fragment = inflater.inflate(R.layout.fragment_add_beer, container, false)
+
+        // Setup View Model
+        val factory = InjectorUtils.provideAddBeerViewModelFactory(activity)
+        viewModel = ViewModelProviders.of(this, factory).get(AddBeerViewModel::class.java)
 
 //        Log.v(LOG_TAG, "pixels: " + Companion.getTHUMB_SMALL_W() + " " + Companion.getTHUMB_LARGE_W())
 
@@ -250,11 +258,14 @@ class AddBeerFragment : Fragment() {
                 + bitterness + ", breweryName: " + breweryName + ", date: " + date)
         Log.d(LOG_TAG, "IMAGES: " + Utilities.listToString(photoPath))
 
-//        val replyIntent = Intent()
+        val replyIntent = Intent()
 //        replyIntent.putExtra(EXTRA_REPLY, beer)
 //        setResult(RESULT_OK, replyIntent)
 
-//        // Determine if this is a new or existing Beer
+//         Determine if this is a new or existing Beer
+        // Add a new beer
+        viewModel.insertBeer(beer)
+
 //        if (currentBeerUri == null) {
 //            // Add a new beer
 //            val newUri = activity.contentResolver.insert(BeerEntry.CONTENT_URI, values)

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
+import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.SortOrderActivity
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
@@ -28,7 +29,7 @@ class MainFragment : Fragment() {
     // Sort direction
     private val ASC = true
 
-    private lateinit var mainActivityViewModel: MainActivityViewModel
+    private lateinit var mainActivityViewModel: MainViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -45,7 +46,8 @@ class MainFragment : Fragment() {
         }
 
         // Get a viewmodel and set up the observers
-        mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+        val factory = InjectorUtils.provideMainActivityViewModelFactory(activity)
+        mainActivityViewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
         mainActivityViewModel.getAllBeers().observe(this,
                 Observer<List<Beer>> { beers -> beerListAdapter.setBeers(beers!!) }
         )
