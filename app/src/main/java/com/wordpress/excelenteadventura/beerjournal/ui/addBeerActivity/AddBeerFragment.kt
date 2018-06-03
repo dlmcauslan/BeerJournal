@@ -284,16 +284,15 @@ class AddBeerFragment : Fragment() {
         // Check that BeerName has an entry. Popup a toast to alert user.
         if (beerName.isEmpty()) {
             Toast.makeText(activity, "Beer must have a name!", Toast.LENGTH_SHORT).show()
-            return
         }
 
         // Set default values if fields are empty
-        if (breweryName.isEmpty()) breweryName = getString(R.string.default_field_string)
-        if (city.isEmpty()) city = getString(R.string.default_field_string)
-        if (country.isEmpty()) country = getString(R.string.default_field_string)
+//        if (breweryName.isEmpty()) breweryName = getString(R.string.default_field_string)
+//        if (city.isEmpty()) city = getString(R.string.default_field_string)
+//        if (country.isEmpty()) country = getString(R.string.default_field_string)
         if (bitterness == null) bitterness = -1
         if (percentage == null) percentage = -1.0
-        if (beerType == "---") beerType = getString(R.string.default_field_string)
+        if (beerType == "---") beerType = ""
         val rating = if (ratingDouble == null) 0 else (2*ratingDouble).toInt()
 
         val beer = Beer(null, beerName, "", beerType, rating, percentage, bitterness, date, comments, breweryName, country, city, state)

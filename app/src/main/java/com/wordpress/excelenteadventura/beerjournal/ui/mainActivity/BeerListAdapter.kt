@@ -28,6 +28,7 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
     }
 
     class BeerViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val context = itemView.context
         val beerName: TextView = itemView.list_item_beer_name
         val beerType: TextView = itemView.list_item_type_bitterness
         val brewery: TextView = itemView.list_item_brewery
@@ -38,13 +39,20 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
 
         fun bind(beer: Beer, listener: OnItemClickListener) {
             beerName.text = beer.name
-            val ibuString =  if (beer.bitterness > 0) " - ${beer.bitterness} IBU" else ""
-            beerType.text = "${beer.type}${ibuString}"
-            brewery.text = "${beer.brewery}, ${beer.country}"
+            beerType.text = context.getString(R.string.adapter_beer_type, formatEmptyString(beer.type), formatIBUString(beer.bitterness))
+            brewery.text = context.getString(R.string.adapter_brewery, formatEmptyString(beer.brewery), formatEmptyString(beer.country))
             dateView.text = formatDate(beer.date)
             percentageView.text = if (beer.percentage >= 0) "${beer.percentage}%" else "0.0%"
-            rating.text = "${beer.rating/2}/5"
+            rating.text = context.getString(R.string.adapter_rating, beer.rating.toFloat()/2)
             itemView.setOnClickListener { listener.onItemClick(beer) }
+        }
+
+        private fun formatIBUString(bitterness: Int): String {
+            return if (bitterness > 0) " - $bitterness IBU" else ""
+        }
+
+        private fun formatEmptyString(string: String): String {
+            return if (string.isEmpty()) context.getString(R.string.default_field_string) else string
         }
 
         private fun formatDate(date: String): String {
