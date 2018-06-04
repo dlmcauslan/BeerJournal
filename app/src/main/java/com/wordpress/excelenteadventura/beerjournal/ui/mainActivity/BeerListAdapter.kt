@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.wordpress.excelenteadventura.beerjournal.R
+import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
+import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.THUMB_SMALL_W
 import kotlinx.android.synthetic.main.beer_adaptor_list_item.view.*
 
 
@@ -28,14 +30,14 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
     }
 
     class BeerViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val context = itemView.context
-        val beerName: TextView = itemView.list_item_beer_name
-        val beerType: TextView = itemView.list_item_type_bitterness
-        val brewery: TextView = itemView.list_item_brewery
-        val dateView: TextView = itemView.list_item_date
-        val percentageView: TextView = itemView.list_item_percentage
-        val rating: TextView = itemView.list_item_rating
-        val beerImage: ImageView = itemView.beer_list_item_image
+        val context: Context = itemView.context
+        private val beerName: TextView = itemView.list_item_beer_name
+        private val beerType: TextView = itemView.list_item_type_bitterness
+        private val brewery: TextView = itemView.list_item_brewery
+        private val dateView: TextView = itemView.list_item_date
+        private val percentageView: TextView = itemView.list_item_percentage
+        private val rating: TextView = itemView.list_item_rating
+        private val beerImage: ImageView = itemView.beer_list_item_image
 
         fun bind(beer: Beer, listener: OnItemClickListener) {
             beerName.text = beer.name
@@ -44,6 +46,11 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
             dateView.text = formatDate(beer.date)
             percentageView.text = if (beer.percentage >= 0) "${beer.percentage}%" else "0.0%"
             rating.text = context.getString(R.string.adapter_rating, beer.rating.toFloat()/2)
+            // Update the image view
+            val photoPaths = Utilities.stringToList(beer.photoLocation)
+            if (photoPaths.isNotEmpty()) {
+                Utilities.setThumbnailFromWidth(beerImage, photoPaths[0], THUMB_SMALL_W)
+            }
             itemView.setOnClickListener { listener.onItemClick(beer) }
         }
 
@@ -69,9 +76,6 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
     override fun onBindViewHolder(holder: BeerViewHolder, position: Int) {
         if (beers.isNotEmpty()) {
             holder.bind(beers[position], listener)
-        } else {
-            // Covers the case of data not being ready yet.
-            holder.beerName.text = "No Beer"
         }
     }
 
@@ -87,67 +91,3 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
         return beers.size
     }
 }
-
-//class BeerCursorAdapter(context: Context, c: Cursor?) : CursorAdapter(context, c, 0) {
-//
-//    private val LOG_TAG = BeerCursorAdapter::class.java.simpleName
-//
-//
-//    override fun newView(context: Context, cursor: Cursor, parent: ViewGroup): View {
-//        // Inflate a list item view
-//        return LayoutInflater.from(context).inflate(R.layout.beer_adaptor_list_item, parent, false)
-//    }
-//
-//    // Binds the beer data in the current row pointed to by the cursor to the given list item
-//    // layout.
-//    override fun bindView(view: View, context: Context, cursor: Cursor) {
-//        // Find the individual views we want to set the data to.
-//        val beerNameTV = view.findViewById(R.id.list_item_beer_name) as TextView
-//        val beerTypeTV = view.findViewById(R.id.list_item_type_bitterness) as TextView
-//        val breweryTV = view.findViewById(R.id.list_item_brewery) as TextView
-//        val dateTV = view.findViewById(R.id.list_item_date) as TextView
-//        val percentageTV = view.findViewById(R.id.list_item_percentage) as TextView
-//        val ratingTV = view.findViewById(R.id.list_item_rating) as TextView
-//        val beerImage = view.findViewById(R.id.beer_list_item_image) as ImageView
-//
-//        // Find the columns of beer attributes that we're interested in.
-//        val beerNameColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_NAME)
-//        val beerTypeColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_TYPE)
-//        val beerIBUColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_IBU)
-//        val breweryNameColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_NAME)
-//        val countryColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BREWERY_COUNTRY)
-//        val dateColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_DATE)
-//        val percentageColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_PERCENTAGE)
-//        val ratingColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_RATING)
-//        val imageColumn = cursor.getColumnIndex(BeerEntry.COLUMN_BEER_PHOTO)
-//
-//        // Read the beer attributes from the cursor for the current beer
-//        val beerName = cursor.getString(beerNameColumn)
-//        val IBU = cursor.getString(beerIBUColumn)
-//        var beerType = cursor.getString(beerTypeColumn)
-//        if (IBU != "-1") beerType += " - $IBU IBU"
-//        val brewery = cursor.getString(breweryNameColumn) + ", " + cursor.getString(countryColumn)
-//        val date = formatDate(cursor.getString(dateColumn))
-//        var percentValue: Double = cursor.getDouble(percentageColumn)
-//        if (percentValue < 0) {
-//            percentValue = 0.0
-//        }
-//        val percentage = percentValue.toString() + "%"
-//        val rating = (cursor.getInt(ratingColumn).toDouble() / 2).toString() + "/5"
-//        val imageStrings = cursor.getString(imageColumn)
-//        val photoPaths = Utilities.stringToList(imageStrings)
-//
-//        // TODO add some code to make things look nicer for form fields that haven't been filled out.
-//
-//        // Update the views with the attributes for the current beer
-//        beerNameTV.text = beerName
-//        beerTypeTV.text = beerType
-//        breweryTV.text = brewery
-//        dateTV.text = date
-//        percentageTV.text = percentage
-//        ratingTV.text = rating
-//        // Update the image view
-////        Utilities.setThumbnailFromWidth(beerImage, photoPaths[0], Companion.getTHUMB_SMALL_W())
-//    }
-//
-//}

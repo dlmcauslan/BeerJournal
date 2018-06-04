@@ -120,12 +120,10 @@ class MainFragment : Fragment() {
                 return true
             }
         }
-
         return super.onOptionsItemSelected(item)
     }
 
     companion object {
-        const val NEW_BEER_ACTIVITY_REQUEST_CODE = 1
         const val BEER_ID = "com.wordpress.excelenteadventura.beerjournal.BeerID"
 
         // Device dimensions for creating thumbnails

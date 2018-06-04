@@ -1,10 +1,12 @@
-package com.wordpress.excelenteadventura.beerjournal
+package com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity
 
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
+import com.wordpress.excelenteadventura.beerjournal.Utilities
+import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.THUMB_LARGE_W
 import java.util.*
 
 /**
@@ -12,10 +14,10 @@ import java.util.*
  * Created by DLMcAuslan on 1/5/2017.
  */
 
-class ImageAdapter(private val mContext: Context, private val mImagesPath: ArrayList<String>) : BaseAdapter() {
+class ImageAdapter(private val context: Context, private val imagesPath: ArrayList<String>) : BaseAdapter() {
 
     override fun getCount(): Int {
-        return mImagesPath.size
+        return imagesPath.size
     }
 
     override fun getItem(position: Int): Any? {
@@ -31,7 +33,7 @@ class ImageAdapter(private val mContext: Context, private val mImagesPath: Array
 
         if (convertView == null) {
             // if it's not a recycled view, initialize some attributes
-            imageView = ImageView(mContext)
+            imageView = ImageView(context)
             imageView.scaleType = ImageView.ScaleType.CENTER_CROP
             imageView.setPadding(0, 0, 0, 0)
         } else {
@@ -39,7 +41,7 @@ class ImageAdapter(private val mContext: Context, private val mImagesPath: Array
         }
 
         // Set image to view
-//        Utilities.setThumbnailFromWidth(imageView, mImagesPath[position], Companion.getTHUMB_LARGE_W())
+        Utilities.setThumbnailFromWidth(imageView, imagesPath[position], THUMB_LARGE_W)
         return imageView
     }
 

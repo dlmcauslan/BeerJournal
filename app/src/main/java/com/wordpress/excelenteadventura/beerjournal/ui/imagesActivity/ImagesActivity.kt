@@ -1,7 +1,8 @@
-package com.wordpress.excelenteadventura.beerjournal
+package com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.wordpress.excelenteadventura.beerjournal.R
 
 class ImagesActivity : AppCompatActivity() {
 

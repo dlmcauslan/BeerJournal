@@ -1,16 +1,19 @@
-package com.wordpress.excelenteadventura.beerjournal
+package com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity
 
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.FileProvider
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.webkit.MimeTypeMap.getFileExtensionFromUrl
 import android.widget.AdapterView
-import android.widget.GridView
+import com.wordpress.excelenteadventura.beerjournal.R
+import kotlinx.android.synthetic.main.fragment_images.view.*
 import java.io.File
 
 
@@ -20,6 +23,8 @@ import java.io.File
  * Created by DLMcAuslan on 5/1/2017.
  */
 class ImagesFragment : Fragment() {
+
+    val LOG_TAG = ImagesFragment::class.java.simpleName
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -35,29 +40,25 @@ class ImagesFragment : Fragment() {
         activity.title = beerName
 
         // Find the grid view
-        val gridView = imageFragment.findViewById(R.id.images_grid_view) as GridView
+        val gridView = imageFragment.images_grid_view
         gridView.adapter = ImageAdapter(activity, imagesPath)
 
         // Set on item click listener to open gallery for that picture using intent
-        gridView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        gridView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             // Opens image in gallery
-            val uri = Uri.fromFile(File(imagesPath[position]))
-            val intent = Intent(android.content.Intent.ACTION_VIEW)
+            val file = File(imagesPath[position])
+            val uri = Uri.fromFile(file)
+            val intent = Intent(Intent.ACTION_VIEW)
             var mime: String? = "*/*"
             val mimeTypeMap = MimeTypeMap.getSingleton()
-//            if (mimeTypeMap.hasExtension(
-//                            mimeTypeMap.getFileExtensionFromUrl(uri.toString())))
-//                mime = mimeTypeMap.getMimeTypeFromExtension(
-//                        mimeTypeMap.getFileExtensionFromUrl(uri.toString()))
-            intent.setDataAndType(uri, mime)
+            if (mimeTypeMap.hasExtension(getFileExtensionFromUrl(uri.toString()))) {
+                mime = mimeTypeMap.getMimeTypeFromExtension(getFileExtensionFromUrl(uri.toString()))
+            }
+            val apkUri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".provider", file)
+            intent.setDataAndType(apkUri, mime)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(intent)
         }
         return imageFragment
     }
-
-    companion object {
-
-        val LOG_TAG = ImagesFragment::class.java.simpleName
-    }
-
-}// Required empty public constructor
+}

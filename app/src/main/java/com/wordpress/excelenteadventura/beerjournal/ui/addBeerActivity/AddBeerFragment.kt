@@ -14,13 +14,16 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.*
 import android.webkit.MimeTypeMap
+import android.webkit.MimeTypeMap.getFileExtensionFromUrl
 import android.widget.*
-import com.wordpress.excelenteadventura.beerjournal.ImagesActivity
 import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import com.wordpress.excelenteadventura.beerjournal.database.BeerContract
+import com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity.ImagesActivity
+import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.THUMB_LARGE_W
+import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.THUMB_SMALL_W
 import kotlinx.android.synthetic.main.fragment_add_beer.view.*
 import java.io.File
 import java.io.IOException
@@ -31,6 +34,8 @@ import java.util.*
  * A simple [Fragment] subclass.
  */
 class AddBeerFragment : Fragment() {
+
+    private val LOG_TAG = AddBeerActivity::class.java.simpleName
 
     // View Model
     private lateinit var viewModel: AddBeerViewModel
@@ -116,7 +121,7 @@ class AddBeerFragment : Fragment() {
         takePhoto.setOnClickListener { startCameraIntent() }
 
         // On click listener for photo to open imagesActivity
-        beerImageView.setOnClickListener{ beerImageClickListener }
+        beerImageView.setOnClickListener( beerImageClickListener )
 
         return fragment
     }
@@ -126,12 +131,9 @@ class AddBeerFragment : Fragment() {
         beer?.let {
             // Update the edit text views with the attributes for the current beer
             nameEdit.setText(beer.name)
-//            if (breweryName == BeerEntry.DEAULT_STRING) breweryName = ""
             breweryNameEdit.setText(beer.brewery)
-//            if (city == BeerEntry.DEAULT_STRING) city = ""
             cityEdit.setText(beer.city)
             stateEdit.setText(beer.state)
-//            if (country == BeerEntry.DEAULT_STRING) country = ""
             countryEdit.setText(beer.country)
             commentsEdit.setText(beer.comments)
             val percentage = beer.percentage
@@ -173,39 +175,42 @@ class AddBeerFragment : Fragment() {
             // Update the date picker
             val dateArray = beer.date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             datePicker.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]))
-        }
 
-        // Update the image view
-//            Utilities.setThumbnailFromWidth(beerImageView!!, photoPath[0], Companion.getTHUMB_LARGE_W())
+            // Update the image view
+            photoPath = Utilities.stringToList(it.photoLocation)
+            if (photoPath.isNotEmpty()) {
+                Utilities.setThumbnailFromWidth(beerImageView, photoPath[0], THUMB_LARGE_W)
+            }
+        }
     }
 
     private val beerImageClickListener = { _: View ->
-
         val intent: Intent
         // If the photo is null or empty then don't pass the intent
         if (photoPath.isEmpty() || photoPath[0].isEmpty()) {
             startCameraIntent()
         } else if (photoPath.size == 1) {
             // Opens the image in gallery
-            val uri = Uri.fromFile(File(photoPath[0]))
+            val file = File(photoPath[0])
+            val uri = Uri.fromFile(file)
             intent = Intent(android.content.Intent.ACTION_VIEW)
             var mime: String? = "*/*"
             val mimeTypeMap = MimeTypeMap.getSingleton()
-
-//                if (mimeTypeMap.hasExtension(
-//                                mimeTypeMap.getFileExtensionFromUrl(uri.toString())))
-//                    mime = mimeTypeMap.getMimeTypeFromExtension(
-//                            mimeTypeMap.getFileExtensionFromUrl(uri.toString()))
-
-            intent.setDataAndType(uri, mime)
+            if (mimeTypeMap.hasExtension(getFileExtensionFromUrl(uri.toString()))) {
+                mime = mimeTypeMap.getMimeTypeFromExtension(getFileExtensionFromUrl(uri.toString()))
+            }
+            val apkUri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".provider", file)
+            intent.setDataAndType(apkUri, mime)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//            intent.setDataAndType(uri, mime)
             startActivity(intent)
         } else {
-            // Create new intent to go to the AddBeer Activity
+            // Create new intent to go to the Images Activity
             intent = Intent(activity, ImagesActivity::class.java)
             intent.putStringArrayListExtra("photosExtra", photoPath)
             intent.putExtra("nameEdit", nameEdit.text.toString().trim { it <= ' ' })
             startActivity(intent)
-        }// If there is only one photo then go straight to gallery when clicking on image.
+        }
     }
 
     private fun startCameraIntent() {
@@ -234,7 +239,7 @@ class AddBeerFragment : Fragment() {
 
             // Continue if the file was successfully created.
             if (photoFile != null) {
-                val photoURI = FileProvider.getUriForFile(activity, "com.example.android.fileprovider", photoFile)
+                val photoURI = FileProvider.getUriForFile(activity, context.applicationContext.packageName + ".provider", photoFile)
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
             }
@@ -245,17 +250,14 @@ class AddBeerFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val numPhotos = photoPath.size - 1
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            //            for (String s : photoPath) {
-            //                Log.d(LOG_TAG, "path here is: " + s);
-            //            }
-            // Create a small and large thumbnail of the captured image, then set the large
-            // thumbnail to the imageview.
-//            Utilities.createThumbnail(photoPath[numPhotos], Companion.getTHUMB_SMALL_W())
-//            Utilities.createThumbnail(photoPath[numPhotos], Companion.getTHUMB_LARGE_W())
-//            Utilities.setThumbnailFromWidth(beerImageView!!, photoPath[0], Companion.getTHUMB_LARGE_W())
+//             Create a small and large thumbnail of the captured image, then set the large
+//             thumbnail to the imageview.
+            Utilities.createThumbnail(photoPath[numPhotos], THUMB_SMALL_W)
+            Utilities.createThumbnail(photoPath[numPhotos], THUMB_LARGE_W)
+            Utilities.setThumbnailFromWidth(beerImageView, photoPath[0], THUMB_LARGE_W)
         } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
             // Otherwise remove the path because the photo was not saved
-            //            Log.d(LOG_TAG, "resultCode not good, path is" + photoPath.get(numPhotos));
+            Log.d(LOG_TAG, "resultCode not good, path is" + photoPath[numPhotos])
             photoPath.removeAt(numPhotos)
 
         }
@@ -284,6 +286,7 @@ class AddBeerFragment : Fragment() {
         // Check that BeerName has an entry. Popup a toast to alert user.
         if (beerName.isEmpty()) {
             Toast.makeText(activity, "Beer must have a name!", Toast.LENGTH_SHORT).show()
+            return
         }
 
         // Set default values if fields are empty
@@ -292,15 +295,11 @@ class AddBeerFragment : Fragment() {
         if (beerType == "---") beerType = ""
         val rating = if (ratingDouble == null) 0 else (2*ratingDouble).toInt()
 
-        val beer = Beer(null, beerName, "", beerType, rating, percentage, bitterness, date, comments, breweryName, country, city, state)
-        
+        val beer = Beer(null, beerName, Utilities.listToString(photoPath), beerType, rating, percentage, bitterness, date, comments, breweryName, country, city, state)
+
         Log.d(LOG_TAG, "name: " + beerName + ", rating: " + rating + ", percentage: " + percentage + ", bitterness: "
                 + bitterness + ", breweryName: " + breweryName + ", date: " + date)
         Log.d(LOG_TAG, "IMAGES: " + Utilities.listToString(photoPath))
-
-//        val replyIntent = Intent()
-//        replyIntent.putExtra(EXTRA_REPLY, beer)
-//        setResult(RESULT_OK, replyIntent)
 
 //         Determine if this is a new or existing Beer
         if (currentBeer == null) {
@@ -309,6 +308,7 @@ class AddBeerFragment : Fragment() {
             beer.id = currentBeer?.id
             viewModel.updateBeer(beer)
         }
+        activity.finish()
     }
 
     /**
@@ -317,33 +317,33 @@ class AddBeerFragment : Fragment() {
     private fun deleteBeer() {
         // Only perform the deletion if it is an existing beer
         currentBeer?.let {
-            viewModel.deleteBeer(it)
             // TODO delete images associated with the beer item.
             for (fileName in photoPath) {
                 // Delete image
-//                val imageFile = File(fileName)
-//                val deleteSuccessful = imageFile.delete()
-//                if (deleteSuccessful)
-//                    Log.v(LOG_TAG, "Delete successful: $fileName")
-//                else
-//                    Log.v(LOG_TAG, "Delete failed: $fileName")
+                val imageFile = File(fileName)
+                val deleteSuccessful = imageFile.delete()
+                if (deleteSuccessful)
+                    Log.d(LOG_TAG, "Delete successful: $fileName")
+                else
+                    Log.d(LOG_TAG, "Delete failed: $fileName")
                 // Delete small thumbnail
-//                val thumbFileName = Utilities.thumbFilePath(fileName, Companion.getTHUMB_SMALL_W())
-//                val thumbFile = File(thumbFileName)
-//                val thumbDeleteSuccessful = thumbFile.delete()
-//                if (thumbDeleteSuccessful)
-//                    Log.v(LOG_TAG, "Thumbnail delete successful: $thumbFileName")
-//                else
-//                    Log.v(LOG_TAG, "Thumbnail delete failed: $thumbFileName")
-//                // Delete large thumbnail
-//                val thumbLargeFileName = Utilities.thumbFilePath(fileName, Companion.getTHUMB_LARGE_W())
-//                val thumbLargeFile = File(thumbLargeFileName)
-//                val thumbLargeDeleteSuccessful = thumbFile.delete()
-//                if (thumbLargeDeleteSuccessful)
-//                    Log.v(LOG_TAG, "Thumbnail delete successful: $thumbLargeFile")
-//                else
-//                    Log.v(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
+                val thumbFileName = Utilities.thumbFilePath(fileName, THUMB_SMALL_W)
+                val thumbFile = File(thumbFileName)
+                val thumbDeleteSuccessful = thumbFile.delete()
+                if (thumbDeleteSuccessful)
+                    Log.d(LOG_TAG, "Thumbnail delete successful: $thumbFileName")
+                else
+                    Log.d(LOG_TAG, "Thumbnail delete failed: $thumbFileName")
+                // Delete large thumbnail
+                val thumbLargeFileName = Utilities.thumbFilePath(fileName, THUMB_LARGE_W)
+                val thumbLargeFile = File(thumbLargeFileName)
+                val thumbLargeDeleteSuccessful = thumbFile.delete()
+                if (thumbLargeDeleteSuccessful)
+                    Log.d(LOG_TAG, "Thumbnail delete successful: $thumbLargeFile")
+                else
+                    Log.d(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
             }
+            viewModel.deleteBeer(it)
         }
         // Close the activity
         activity.finish()
@@ -371,7 +371,6 @@ class AddBeerFragment : Fragment() {
             R.id.action_save -> {
                 // Save beer, then exit activity
                 saveBeer()
-                activity.finish()
                 return true
             }
         // Click on delete menu option
@@ -415,11 +414,6 @@ class AddBeerFragment : Fragment() {
     }
 
     companion object {
-
-        const val EXTRA_REPLY = "com.wordpress.excelenteadventura.beerjournal.REPLY"
-
-        private val LOG_TAG = AddBeerActivity::class.java.simpleName
-
         internal const val REQUEST_IMAGE_CAPTURE = 1
     }
 }

@@ -40,53 +40,51 @@ object Utilities {
         return File.createTempFile(imageFileName, ".jpg", storageDir)
     }
 
-    //    /**
-    //     * Loads an image from the phones storage
-    //     * @param context
-    //     * @param imageName - filename of image to load
-    //     * @return - the loaded image.
-    //     */
-    //    public static Bitmap loadImage(Context context, String imageName) {
-    //        Bitmap bitmap = null;
-    //        try {
-    //            FileInputStream fiStream = new FileInputStream (new File(imageName));
-    //            bitmap = BitmapFactory.decodeStream(fiStream);
-    //            fiStream.close();
-    //        } catch (Exception e) {
-    //            Log.e(LOG_TAG, "Error loading image.");
-    //            e.printStackTrace();
-    //        }
-    //        return bitmap;
-    //    }
-
-
-    //    public static void setImage(ImageView imageView, String photoPath) {
-    //        // Get the dimensions of the View
-    //        int targetW = imageView.getWidth();
-    //        int targetH = imageView.getHeight();
-    //
-    //        // Get the dimensions of the bitmap
-    //        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-    //        bmOptions.inJustDecodeBounds = true;
-    //        BitmapFactory.decodeFile(photoPath, bmOptions);
-    //        int photoW = bmOptions.outWidth;
-    //        int photoH = bmOptions.outHeight;
-    //
-    //        // Determine how much to scale down the image for the editor screen.
-    ////        Log.d(LOG_TAG, "w: " + targetW + ", h: " + targetH + ", w2: " + photoW + ", h2: " + photoH);
-    //        // To stop crashing do a default scaling of 8 if either targetW or targetH are 0
-    //        int scaleFactor = 8;
-    //        if (targetH > 0 && targetW > 0) scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-    //        Log.d(LOG_TAG, "Scale factor: " + scaleFactor);
-    //
-    //        // Decode the image file into a Bitmap sized to fill the View
-    //        bmOptions.inJustDecodeBounds = false;
-    //        bmOptions.inSampleSize = scaleFactor;
-    //        bmOptions.inPurgeable = true;
-    //
-    //        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, bmOptions);
-    //        imageView.setImageBitmap(bitmap);
-    //    }
+//    /**
+//     * Loads an image from the phones storage
+//     * @param context
+//     * @param imageName - filename of image to load
+//     * @return - the loaded image.
+//     */
+//    fun loadImage(context: Context, imageName: String): Bitmap? {
+//        var bitmap: Bitmap? = null
+//        try {
+//            val fiStream = FileInputStream(File(imageName))
+//            bitmap = BitmapFactory.decodeStream(fiStream)
+//            fiStream.close()
+//        } catch (e: Exception) {
+//            Log.e(LOG_TAG, "Error loading image.")
+//        }
+//        return bitmap
+//    }
+//
+//    fun setImage(imageView: ImageView, photoPath: String) {
+//        // Get the dimensions of the View
+//        val targetW = imageView.width
+//        val targetH = imageView.height
+//
+//        // Get the dimensions of the bitmap
+//        val bmOptions = BitmapFactory.Options()
+//        bmOptions.inJustDecodeBounds = true
+//        BitmapFactory.decodeFile(photoPath, bmOptions)
+//        val photoW = bmOptions.outWidth
+//        val photoH = bmOptions.outHeight
+//
+//        // Determine how much to scale down the image for the editor screen.
+////        Log.d(LOG_TAG, "w: " + targetW + ", h: " + targetH + ", w2: " + photoW + ", h2: " + photoH);
+//        // To stop crashing do a default scaling of 8 if either targetW or targetH are 0
+//        var scaleFactor = 8
+//        if (targetH > 0 && targetW > 0) scaleFactor = Math.min(photoW/targetW, photoH/targetH)
+//        Log.d(LOG_TAG, "Scale factor: " + scaleFactor)
+//
+//        // Decode the image file into a Bitmap sized to fill the View
+//        bmOptions.inJustDecodeBounds = false
+//        bmOptions.inSampleSize = scaleFactor
+//        bmOptions.inPurgeable = true
+//
+//        val bitmap = BitmapFactory.decodeFile(photoPath, bmOptions)
+//        imageView.setImageBitmap(bitmap)
+//    }
 
 
     /**
