@@ -24,6 +24,10 @@ class BeerRepository private constructor(private val beerDao: BeerDao) {
         UpdateAsyncTask(beerDao).execute(beer)
     }
 
+    fun deleteBeer(beer: Beer) {
+        DeleteAsyncTask(beerDao).execute(beer)
+    }
+
     private class InsertAsyncTask internal constructor(private val asyncTaskDao: BeerDao) : AsyncTask<Beer, Void, Void>() {
         override fun doInBackground(vararg params: Beer): Void? {
             asyncTaskDao.insertBeer(params[0])
@@ -34,6 +38,13 @@ class BeerRepository private constructor(private val beerDao: BeerDao) {
     private class UpdateAsyncTask internal constructor(private val asyncTaskDao: BeerDao) : AsyncTask<Beer, Void, Void>() {
         override fun doInBackground(vararg params: Beer): Void? {
             asyncTaskDao.updateBeer(params[0])
+            return null
+        }
+    }
+
+    private class DeleteAsyncTask internal constructor(private val asyncTaskDao: BeerDao) : AsyncTask<Beer, Void, Void>() {
+        override fun doInBackground(vararg params: Beer): Void? {
+            asyncTaskDao.deleteBeer(params[0])
             return null
         }
     }

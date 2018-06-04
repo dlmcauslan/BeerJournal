@@ -57,7 +57,7 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
 
         private fun formatDate(date: String): String {
             val dateSplit = date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            return if (dateSplit.size == 2) dateSplit[2] + "/" + (Integer.parseInt(dateSplit[1]) + 1) + "/" + dateSplit[0]
+            return if (dateSplit.size == 3) dateSplit[2] + "/" + (Integer.parseInt(dateSplit[1]) + 1) + "/" + dateSplit[0]
             else date
         }
     }

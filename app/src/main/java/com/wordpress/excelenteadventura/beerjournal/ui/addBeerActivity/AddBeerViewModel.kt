@@ -7,6 +7,8 @@ import com.wordpress.excelenteadventura.beerjournal.database.Beer
 
 class AddBeerViewModel(private val repository: BeerRepository): ViewModel() {
 
+    val currentBeer: LiveData<Beer?> = repository.currentBeer
+
     fun insertBeer(beer: Beer) {
         repository.insertBeer(beer)
     }
@@ -15,5 +17,7 @@ class AddBeerViewModel(private val repository: BeerRepository): ViewModel() {
         repository.updateBeer(beer)
     }
 
-    val currentBeer: LiveData<Beer?> = repository.currentBeer
+    fun deleteBeer(beer: Beer) {
+        repository.deleteBeer(beer)
+    }
 }

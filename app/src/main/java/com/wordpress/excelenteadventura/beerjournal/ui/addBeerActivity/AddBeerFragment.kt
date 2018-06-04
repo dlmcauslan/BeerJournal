@@ -271,10 +271,10 @@ class AddBeerFragment : Fragment() {
         val ratingDouble = ratingSpinner.selectedItem.toString().toDoubleOrNull()
         var percentage = percentageEdit.text.toString().toDoubleOrNull()
         var bitterness = bitternessEdit.text.toString().toIntOrNull()
-        var breweryName = breweryNameEdit.text.toString().trim { it <= ' ' }
-        var city = cityEdit.text.toString().trim { it <= ' ' }
+        val breweryName = breweryNameEdit.text.toString().trim { it <= ' ' }
+        val city = cityEdit.text.toString().trim { it <= ' ' }
         val state = stateEdit.text.toString().trim { it <= ' ' }
-        var country = countryEdit.text.toString().trim { it <= ' ' }
+        val country = countryEdit.text.toString().trim { it <= ' ' }
         val comments = commentsEdit.text.toString().trim { it <= ' ' }
         val year = datePicker.year
         val month = datePicker.month
@@ -287,17 +287,13 @@ class AddBeerFragment : Fragment() {
         }
 
         // Set default values if fields are empty
-//        if (breweryName.isEmpty()) breweryName = getString(R.string.default_field_string)
-//        if (city.isEmpty()) city = getString(R.string.default_field_string)
-//        if (country.isEmpty()) country = getString(R.string.default_field_string)
         if (bitterness == null) bitterness = -1
         if (percentage == null) percentage = -1.0
         if (beerType == "---") beerType = ""
         val rating = if (ratingDouble == null) 0 else (2*ratingDouble).toInt()
 
         val beer = Beer(null, beerName, "", beerType, rating, percentage, bitterness, date, comments, breweryName, country, city, state)
-
-
+        
         Log.d(LOG_TAG, "name: " + beerName + ", rating: " + rating + ", percentage: " + percentage + ", bitterness: "
                 + bitterness + ", breweryName: " + breweryName + ", date: " + date)
         Log.d(LOG_TAG, "IMAGES: " + Utilities.listToString(photoPath))
@@ -307,9 +303,12 @@ class AddBeerFragment : Fragment() {
 //        setResult(RESULT_OK, replyIntent)
 
 //         Determine if this is a new or existing Beer
-        // Add a new beer
-        if (currentBeer == null) viewModel.insertBeer(beer)
-        else viewModel.updateBeer(beer)
+        if (currentBeer == null) {
+            viewModel.insertBeer(beer)
+        } else {
+            beer.id = currentBeer?.id
+            viewModel.updateBeer(beer)
+        }
     }
 
     /**
@@ -318,15 +317,16 @@ class AddBeerFragment : Fragment() {
     private fun deleteBeer() {
         // Only perform the deletion if it is an existing beer
         currentBeer?.let {
+            viewModel.deleteBeer(it)
             // TODO delete images associated with the beer item.
             for (fileName in photoPath) {
                 // Delete image
-                val imageFile = File(fileName)
-                val deleteSuccessful = imageFile.delete()
-                if (deleteSuccessful)
-                    Log.v(LOG_TAG, "Delete successful: $fileName")
-                else
-                    Log.v(LOG_TAG, "Delete failed: $fileName")
+//                val imageFile = File(fileName)
+//                val deleteSuccessful = imageFile.delete()
+//                if (deleteSuccessful)
+//                    Log.v(LOG_TAG, "Delete successful: $fileName")
+//                else
+//                    Log.v(LOG_TAG, "Delete failed: $fileName")
                 // Delete small thumbnail
 //                val thumbFileName = Utilities.thumbFilePath(fileName, Companion.getTHUMB_SMALL_W())
 //                val thumbFile = File(thumbFileName)
@@ -344,13 +344,6 @@ class AddBeerFragment : Fragment() {
 //                else
 //                    Log.v(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
             }
-            // Call the content resolver to delete the beer from database
-//            val rowsDeleted = activity.contentResolver.delete(beerId, null, null)
-//            // Show a toast message depending on whether or not the delete was successfull
-//            if (rowsDeleted == 0)
-//                Toast.makeText(activity, getString(R.string.editor_delete_beer_failed), Toast.LENGTH_SHORT).show()
-//            else
-//                Toast.makeText(activity, getString(R.string.editor_delete_beer_successful), Toast.LENGTH_SHORT).show()
         }
         // Close the activity
         activity.finish()
