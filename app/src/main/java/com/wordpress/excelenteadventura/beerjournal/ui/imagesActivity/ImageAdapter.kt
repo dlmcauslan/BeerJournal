@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import com.wordpress.excelenteadventura.beerjournal.Utilities
-import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.THUMB_LARGE_W
+import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_LARGE_W
 import java.util.*
 
 /**

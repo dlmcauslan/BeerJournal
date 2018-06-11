@@ -1,6 +1,8 @@
 package com.wordpress.excelenteadventura.beerjournal.ui.mainActivity
 
 import android.content.Context
+import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +13,6 @@ import android.widget.TextView
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
-import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.THUMB_SMALL_W
 import kotlinx.android.synthetic.main.beer_adaptor_list_item.view.*
 
 
@@ -39,6 +40,7 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
         private val rating: TextView = itemView.list_item_rating
         private val beerImage: ImageView = itemView.beer_list_item_image
 
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         fun bind(beer: Beer, listener: OnItemClickListener) {
             beerName.text = beer.name
             beerType.text = context.getString(R.string.adapter_beer_type, formatEmptyString(beer.type), formatIBUString(beer.bitterness))
@@ -50,6 +52,8 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
             val photoPaths = Utilities.stringToList(beer.photoLocation)
             if (photoPaths.isNotEmpty()) {
                 Utilities.setThumbnailFromWidth(beerImage, photoPaths[0], THUMB_SMALL_W)
+            } else {
+                beerImage.setImageDrawable(context.getDrawable(R.drawable.ic_default_image_foreground))
             }
             itemView.setOnClickListener { listener.onItemClick(beer) }
         }

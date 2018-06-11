@@ -14,7 +14,7 @@ import com.wordpress.excelenteadventura.beerjournal.database.BeerDao
 class BeerRepository private constructor(private val beerDao: BeerDao) {
 
     val beers: LiveData<List<Beer>> = beerDao.getAllBeers()
-    val currentBeer: MutableLiveData<Beer?> = MutableLiveData()
+    val currentBeer = MutableLiveData<Beer?>()
 
     fun insertBeer(beer: Beer) {
         InsertAsyncTask(beerDao).execute(beer)

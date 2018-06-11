@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.BitmapFactory.decodeFile
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.os.Environment
 import android.util.Log
 import android.widget.ImageView
@@ -103,7 +105,6 @@ object Utilities {
         val thumbScaleFactor = photoW / desiredThumbnailWidth
         bmOptions.inJustDecodeBounds = false
         bmOptions.inSampleSize = thumbScaleFactor
-        bmOptions.inPurgeable = true
         // Create thumbnail image
         val thumbnailImage = decodeFile(photoPath, bmOptions)
         saveThumbnail(thumbnailImage, photoPath, desiredThumbnailWidth)
@@ -135,7 +136,23 @@ object Utilities {
     fun setThumbnailFromWidth(imageView: ImageView, photoPath: String, desiredWidth: Int) {
         val thumbPath = thumbFilePath(photoPath, desiredWidth)
         Log.d(LOG_TAG, "thumbname Set = $thumbPath")
-        val bitmap = decodeFile(thumbPath)
+        var bitmap = decodeFile(thumbPath)
+        val file = File(photoPath)
+        try {
+            val exif = ExifInterface(file.absolutePath)
+            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+            Log.d("EXIF", "Exif: $orientation")
+            val matrix = Matrix()
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90F)
+                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180F)
+                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270F)
+            }
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true) // rotating bitmap
+            // rotating bitmap
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "Error rotating bitmap at $thumbPath = $e")
+        }
         imageView.setImageBitmap(bitmap)
     }
 

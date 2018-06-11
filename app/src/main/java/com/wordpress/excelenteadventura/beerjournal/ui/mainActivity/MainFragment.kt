@@ -122,12 +122,8 @@ class MainFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    companion object {
-        const val BEER_ID = "com.wordpress.excelenteadventura.beerjournal.BeerID"
-
-        // Device dimensions for creating thumbnails
-        var THUMB_SMALL_W: Int = 0
-        var THUMB_LARGE_W: Int = 0
-    }
 }
+
+// Device dimensions for creating thumbnails
+var THUMB_SMALL_W: Int = 0
+var THUMB_LARGE_W: Int = 0

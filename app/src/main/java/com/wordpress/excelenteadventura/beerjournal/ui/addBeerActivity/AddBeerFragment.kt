@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
 import android.support.v7.app.AlertDialog
+import android.text.format.DateUtils
 import android.util.Log
 import android.view.*
 import android.webkit.MimeTypeMap
@@ -20,10 +21,10 @@ import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
-import com.wordpress.excelenteadventura.beerjournal.database.BeerContract
 import com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity.ImagesActivity
-import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.THUMB_LARGE_W
-import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainFragment.Companion.THUMB_SMALL_W
+import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_LARGE_W
+import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_SMALL_W
+import kotlinx.android.synthetic.main.fragment_add_beer.*
 import kotlinx.android.synthetic.main.fragment_add_beer.view.*
 import java.io.File
 import java.io.IOException
@@ -150,7 +151,7 @@ class AddBeerFragment : Fragment() {
             // Update the spinners
             // If beertype equals "unknown" set the spinner to ---
             val beerType = beer.type
-            if (beerType == BeerContract.BeerEntry.DEAULT_STRING) {
+            if (beerType == "") {
                 typeSpinner.setSelection(0)
             } else {
                 val typeArray = Arrays.asList(*resources.getStringArray(R.array.array_beer_type_options))
@@ -164,16 +165,16 @@ class AddBeerFragment : Fragment() {
                     typeEdit.visibility = View.VISIBLE
                     typeEdit.setText(beerType)
                 }
-                //                Log.d(LOG_TAG, "type " + beerType + " " + typeArray.indexOf(beerType));
-
-            }// If beertype equals something that is not
+            }
             val ratingArray = Arrays.asList(*resources.getStringArray(R.array.array_rating_options))
             val rating = beer.rating.toDouble() / 2
             ratingSpinner.setSelection(ratingArray.indexOf(rating.toString()))
-            //            Log.d(LOG_TAG, "rating " + String.valueOf(rating));
 
             // Update the date picker
             val dateArray = beer.date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            edit_date.text = DateUtils.formatDateTime(context,
+                    (GregorianCalendar(dateArray[2].toInt(), dateArray[1].toInt(), dateArray[0].toInt())).timeInMillis,
+                    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_NUMERIC_DATE or DateUtils.FORMAT_SHOW_YEAR)
             datePicker.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]))
 
             // Update the image view
