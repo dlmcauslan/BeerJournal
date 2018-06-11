@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <fragment
-    android:name="com.wordpress.excelenteadventura.beerjournal.SortOrderActivity$UserPreferenceFragment"
+    android:name="com.wordpress.excelenteadventura.beerjournal.ui.SortOrderActivity$UserPreferenceFragment"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_sort_order"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wordpress.excelenteadventura.beerjournal.SortOrderActivity">
+    tools:context="com.wordpress.excelenteadventura.beerjournal.ui.SortOrderActivity">
 </fragment>

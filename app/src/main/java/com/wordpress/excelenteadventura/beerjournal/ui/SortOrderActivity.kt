@@ -1,8 +1,9 @@
-package com.wordpress.excelenteadventura.beerjournal
+package com.wordpress.excelenteadventura.beerjournal.ui
 
 import android.os.Bundle
 import android.preference.PreferenceActivity
 import android.preference.PreferenceFragment
+import com.wordpress.excelenteadventura.beerjournal.R
 
 /**
  * Created by David-local on 1/5/2017.

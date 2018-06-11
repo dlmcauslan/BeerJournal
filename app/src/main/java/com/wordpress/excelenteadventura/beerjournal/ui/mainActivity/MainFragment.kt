@@ -13,7 +13,7 @@ import android.view.*
 import com.wordpress.excelenteadventura.beerjournal.BeerRepository
 import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
-import com.wordpress.excelenteadventura.beerjournal.SortOrderActivity
+import com.wordpress.excelenteadventura.beerjournal.ui.SortOrderActivity
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity
 import kotlinx.android.synthetic.main.fragment_main.view.*
