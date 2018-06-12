@@ -86,11 +86,22 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
     fun setBeers(beers: List<Beer>) {
         this.beers = beers
         Log.d("BeerListAdapter", "BeerList, size ${beers.size}: $beers")
+    }
+
+    fun sortBeers(sortType: String, sortDirection: Boolean) {
+        beers = when (sortType) {
+            context.getString(R.string.sort_beer_type) -> beers.sortedWith(compareBy(Beer::type, Beer::name))
+            context.getString(R.string.sort_beer_percentage) -> beers.sortedWith(compareBy(Beer::percentage, Beer::name))
+            context.getString(R.string.sort_beer_rating) -> beers.sortedWith(compareBy(Beer::rating, Beer::name))
+            context.getString(R.string.sort_beer_date) -> beers.sortedWith(compareBy(Beer::date, Beer::name))
+            context.getString(R.string.sort_beer_bitterness) -> beers.sortedWith(compareBy(Beer::bitterness, Beer::name))
+            context.getString(R.string.sort_beer_location) -> beers.sortedWith(compareBy<Beer> { it.country }.thenBy { it.brewery }.thenBy { it.name })
+            else -> beers.sortedBy { it.name }
+        }
+        if (!sortDirection) beers = beers.asReversed()
         notifyDataSetChanged()
     }
 
-    // getItemCount() is called many times, and when it is first called,
-    // mWords has not been updated (means initially, it's null, and we can't return null).
     override fun getItemCount(): Int {
         return beers.size
     }
