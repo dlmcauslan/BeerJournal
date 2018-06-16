@@ -79,6 +79,7 @@
 
     <!--Beer types-->
     <string name="other">Other</string>
+    <string name="apa">American Pale Ale</string>
     <string name="pale_ale">Pale Ale</string>
     <string name="ipa">India Pale Ale</string>
     <string name="porter">Porter</string>
@@ -95,6 +96,7 @@
     <string name="sour">Sour Beer</string>
     <string name="beer_not_chosen">---</string>
     <string name="unknown">Unknown</string>
+    <string name="an_image_of_a_beer">An image of a beer</string>
 
 
     <!-- These are the options displayed in the rating drop-down Spinner -->

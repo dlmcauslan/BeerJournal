@@ -30,6 +30,7 @@ class MainFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var repository: BeerRepository
+    private lateinit var beerListAdapter: BeerListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -38,7 +39,7 @@ class MainFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.fragment_main, container, false)
 
         // Setup the recycler view
-        val beerListAdapter = BeerListAdapter(context, beerItemClickListener)
+        beerListAdapter = BeerListAdapter(context, beerItemClickListener)
         val recyclerView = fragmentView.main_fragment_recycler_view
         recyclerView.apply {
             adapter = beerListAdapter
@@ -49,7 +50,10 @@ class MainFragment : Fragment() {
         val factory = InjectorUtils.provideMainActivityViewModelFactory(activity)
         viewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
         viewModel.beers.observe(this,
-                Observer<List<Beer>> { beers -> beerListAdapter.setBeers(beers!!) }
+                Observer<List<Beer>> {
+                    beers -> beerListAdapter.setBeers(beers!!)
+                    sortBeers()
+                }
         )
 
         // Setup the repository
@@ -81,6 +85,18 @@ class MainFragment : Fragment() {
         return fragmentView
     }
 
+    override fun onResume() {
+        super.onResume()
+        sortBeers()
+    }
+
+    private fun sortBeers() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        val sortType = prefs.getString(getString(R.string.preference_sort_order), getString(R.string.sort_beer_name))
+        val sortDirection = prefs.getBoolean(getString(R.string.preference_sort_asc_desc), ASC)
+        beerListAdapter.sortBeers(sortType, sortDirection)
+    }
+
     // On Click listener for the recycler view.
     private val beerItemClickListener = object : BeerListAdapter.OnItemClickListener {
         override fun onItemClick(item: Beer) {
@@ -110,6 +126,7 @@ class MainFragment : Fragment() {
                 val sortDirection = prefs.getBoolean(getString(R.string.preference_sort_asc_desc), ASC)
                 editor.putBoolean(getString(R.string.preference_sort_asc_desc), !sortDirection)
                 editor.apply()
+                sortBeers()
                 return true
             }
         // Click on sort_order menu item
