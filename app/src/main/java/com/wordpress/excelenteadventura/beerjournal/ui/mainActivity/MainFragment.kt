@@ -1,6 +1,7 @@
 package com.wordpress.excelenteadventura.beerjournal.ui.mainActivity
 
 
+import android.app.AlertDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -13,7 +14,6 @@ import android.view.*
 import com.wordpress.excelenteadventura.beerjournal.BeerRepository
 import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
-import com.wordpress.excelenteadventura.beerjournal.ui.SortOrderActivity
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity
 import kotlinx.android.synthetic.main.fragment_main.view.*
@@ -113,31 +113,44 @@ class MainFragment : Fragment() {
         activity.menuInflater.inflate(R.menu.menu_main, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Perform different activities based on which item the user clicks
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
         val editor = prefs.edit()
-        //        editor.putString(getString(R.string.pref_main_username), userName);
-        editor.apply()
-        when (item!!.itemId) {
+        when (item.itemId) {
         // Click on ascending/descending menu item
             R.id.action_asc_desc -> {
                 // Change to opposite sortDirection
                 val sortDirection = prefs.getBoolean(getString(R.string.preference_sort_asc_desc), ASC)
-                editor.putBoolean(getString(R.string.preference_sort_asc_desc), !sortDirection)
-                editor.apply()
+                editor.putBoolean(getString(R.string.preference_sort_asc_desc), !sortDirection).apply()
                 sortBeers()
                 return true
             }
         // Click on sort_order menu item
             R.id.action_sort_order -> {
-                // Start intent to open sortOrder activity
-                val intent = Intent(activity, SortOrderActivity::class.java)
-                startActivity(intent)
+                // Create alert dialog to select sort order
+                createSortOrderAlertDialog()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    // Creates an alert dialog to allow the user to select their sort order
+    private fun createSortOrderAlertDialog() {
+        val values = context.resources.getStringArray(R.array.array_sort_types)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        val sortType = prefs.getString(getString(R.string.preference_sort_order), getString(R.string.sort_beer_name))
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.action_sort_order))
+        builder.setSingleChoiceItems(values, values.indexOf(sortType), { dialog, item ->
+            dialog.dismiss()
+            val edit = prefs.edit()
+            edit.putString(getString(R.string.preference_sort_order), values[item]).apply()
+            sortBeers()
+        })
+        val alertDialog = builder.create()
+        alertDialog.show()
     }
 }
 

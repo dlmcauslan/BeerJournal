@@ -38,13 +38,6 @@
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/EditorTheme">
         </activity>
-        <activity
-            android:name="com.wordpress.excelenteadventura.beerjournal.ui.SortOrderActivity"
-            android:label="sort order activity"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@style/EditorTheme">
-        </activity>
-
 
         <!-- File provider for storing camera images -->
         <provider
