@@ -32,6 +32,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 internal const val REQUEST_IMAGE_CAPTURE = 1
+internal const val PHOTOS_EXTRA = "com.wordpress.excelenteadventura.beerjournal.photosExtra"
+internal const val BEER_NAME_EXTRA = "com.wordpress.excelenteadventura.beerjournal.beerNameExtra"
+
 /**
  * A simple [Fragment] subclass.
  */
@@ -91,8 +94,6 @@ class AddBeerFragment : Fragment() {
                     currentBeer = beer
                     populateUI(beer) }
         )
-
-//        Log.v(LOG_TAG, "pixels: " + Companion.getTHUMB_SMALL_W() + " " + Companion.getTHUMB_LARGE_W())
 
         // This line enables the fragment to handle menu events
         setHasOptionsMenu(true)
@@ -219,8 +220,8 @@ class AddBeerFragment : Fragment() {
         } else {
             // Create new intent to go to the Images Activity
             intent = Intent(activity, ImagesActivity::class.java)
-            intent.putStringArrayListExtra("photosExtra", photoPath)
-            intent.putExtra("nameEdit", nameEdit.text.toString().trim { it <= ' ' })
+            intent.putStringArrayListExtra(PHOTOS_EXTRA, photoPath)
+            intent.putExtra(BEER_NAME_EXTRA, nameEdit.text.toString().trim { it <= ' ' })
             startActivity(intent)
         }
     }

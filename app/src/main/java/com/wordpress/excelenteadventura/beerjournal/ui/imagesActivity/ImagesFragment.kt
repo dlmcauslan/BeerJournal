@@ -13,6 +13,8 @@ import android.webkit.MimeTypeMap
 import android.webkit.MimeTypeMap.getFileExtensionFromUrl
 import android.widget.AdapterView
 import com.wordpress.excelenteadventura.beerjournal.R
+import com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.BEER_NAME_EXTRA
+import com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.PHOTOS_EXTRA
 import kotlinx.android.synthetic.main.fragment_images.view.*
 import java.io.File
 
@@ -33,8 +35,8 @@ class ImagesFragment : Fragment() {
 
         // Get imagesPaths data from intent.
         val intent = activity.intent
-        val imagesPath = intent.getStringArrayListExtra("photosExtra")
-        val beerName = intent.getStringExtra("beerName")
+        val imagesPath = intent.getStringArrayListExtra(PHOTOS_EXTRA)
+        val beerName = intent.getStringExtra(BEER_NAME_EXTRA)
 
         // Set title of activity to the beer Name
         activity.title = beerName

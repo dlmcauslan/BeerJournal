@@ -26,7 +26,6 @@
             android:name="com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity"
             android:label="@string/add_beer_title"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName="com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainActivity"
             android:theme="@style/EditorTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -37,6 +36,9 @@
             android:label="image activity"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/EditorTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity" />
         </activity>
 
         <!-- File provider for storing camera images -->
