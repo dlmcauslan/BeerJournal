@@ -7,7 +7,7 @@
     <string name="default_field_string">Unknown</string>
     <string name="adapter_beer_type">%1$s%2$s</string>
     <string name="adapter_brewery">%1$s, %2$s</string>
-    <string name="adapter_rating">%1$.1f/5</string>
+    <string name="adapter_rating">%1s/5</string>
 
     <!--Options menu strings-->
     <string name="action_save">Save</string>

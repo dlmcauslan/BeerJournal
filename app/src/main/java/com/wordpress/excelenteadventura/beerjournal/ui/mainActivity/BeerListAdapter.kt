@@ -45,9 +45,9 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
             beerName.text = beer.name
             beerType.text = context.getString(R.string.adapter_beer_type, formatEmptyString(beer.type), formatIBUString(beer.bitterness))
             brewery.text = context.getString(R.string.adapter_brewery, formatEmptyString(beer.brewery), formatEmptyString(beer.country))
-            dateView.text = formatDate(beer.date)
+            dateView.text = beer.date
             percentageView.text = if (beer.percentage >= 0) "${beer.percentage}%" else "0.0%"
-            rating.text = context.getString(R.string.adapter_rating, beer.rating.toFloat()/2)
+            rating.text = context.getString(R.string.adapter_rating, formatRating(beer.rating))
             // Update the image view
             val photoPaths = Utilities.stringToList(beer.photoLocation)
             if (photoPaths.isNotEmpty()) {
@@ -66,10 +66,9 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
             return if (string.isEmpty()) context.getString(R.string.default_field_string) else string
         }
 
-        private fun formatDate(date: String): String {
-            val dateSplit = date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            return if (dateSplit.size == 3) dateSplit[2] + "/" + (Integer.parseInt(dateSplit[1]) + 1) + "/" + dateSplit[0]
-            else date
+        private fun formatRating(rating: Int): String {
+            val ratingOutOf5 = rating.toFloat()/2
+            return if (rating%2 == 1) ratingOutOf5.toString() else ratingOutOf5.toInt().toString()
         }
     }
 

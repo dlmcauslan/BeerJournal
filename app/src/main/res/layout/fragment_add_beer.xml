@@ -20,7 +20,10 @@
                 android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingRight="16dp">
+                android:paddingRight="16dp"
+                android:paddingLeft="0dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="0dp">
 
                 <ImageView
                     android:id="@+id/image_beer_photo"
@@ -29,6 +32,7 @@
                     android:src="@mipmap/ic_launcher"
                     android:adjustViewBounds = "true"
                     android:scaleType="fitCenter"
+                    android:contentDescription="@string/an_image_of_a_beer"
                     />
 
                 <TextView
@@ -254,14 +258,6 @@
 
 
         </LinearLayout>
-
-        <DatePicker
-            android:id="@+id/date_picker"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp"/>
-
-
 
     </LinearLayout>
 </ScrollView>

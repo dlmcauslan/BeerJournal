@@ -1,7 +1,9 @@
 package com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity
 
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
+import android.app.DatePickerDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -11,7 +13,6 @@ import android.provider.MediaStore
 import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
 import android.support.v7.app.AlertDialog
-import android.text.format.DateUtils
 import android.util.Log
 import android.view.*
 import android.webkit.MimeTypeMap
@@ -24,13 +25,13 @@ import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity.ImagesActivity
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_LARGE_W
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_SMALL_W
-import kotlinx.android.synthetic.main.fragment_add_beer.*
 import kotlinx.android.synthetic.main.fragment_add_beer.view.*
 import java.io.File
 import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
-
+internal const val REQUEST_IMAGE_CAPTURE = 1
 /**
  * A simple [Fragment] subclass.
  */
@@ -56,7 +57,7 @@ class AddBeerFragment : Fragment() {
     private lateinit var typeSpinner: Spinner
     private lateinit var typeEdit: EditText
     private lateinit var ratingSpinner: Spinner
-    private lateinit var datePicker: DatePicker
+    private lateinit var dateText: TextView
     private lateinit var beerImageView: ImageView
 
     // An ArrayList to hold Strings that contain the paths to the photos.
@@ -79,7 +80,7 @@ class AddBeerFragment : Fragment() {
         typeSpinner = fragment.spinner_beer_type
         typeEdit = fragment.edit_beer_type
         ratingSpinner = fragment.spinner_beer_rating
-        datePicker = fragment.date_picker
+        dateText = fragment.edit_date
         beerImageView = fragment.image_beer_photo
 
         // Setup View Model
@@ -104,16 +105,12 @@ class AddBeerFragment : Fragment() {
 
         // On click listener for beer type spinner to show beer type edit text if other is selected
         typeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
             override fun onItemSelected(arg0: AdapterView<*>, arg1: View, arg2: Int, arg3: Long) {
                 val item = typeSpinner.selectedItem.toString()
                 Log.i("Selected item : ", item)
                 typeEdit.visibility = (if (item == getString(R.string.other)) View.VISIBLE else View.GONE)
             }
-
-            override fun onNothingSelected(arg0: AdapterView<*>) {
-
-            }
+            override fun onNothingSelected(arg0: AdapterView<*>) { }
 
         }
 
@@ -127,6 +124,7 @@ class AddBeerFragment : Fragment() {
         return fragment
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun populateUI(beer: Beer?) {
 //            // TODO Handle default values
         beer?.let {
@@ -170,18 +168,32 @@ class AddBeerFragment : Fragment() {
             val rating = beer.rating.toDouble() / 2
             ratingSpinner.setSelection(ratingArray.indexOf(rating.toString()))
 
-            // Update the date picker
-            val dateArray = beer.date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            edit_date.text = DateUtils.formatDateTime(context,
-                    (GregorianCalendar(dateArray[2].toInt(), dateArray[1].toInt(), dateArray[0].toInt())).timeInMillis,
-                    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_NUMERIC_DATE or DateUtils.FORMAT_SHOW_YEAR)
-            datePicker.updateDate(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]))
-
             // Update the image view
             photoPath = Utilities.stringToList(it.photoLocation)
             if (photoPath.isNotEmpty()) {
                 Utilities.setThumbnailFromWidth(beerImageView, photoPath[0], THUMB_LARGE_W)
             }
+        }
+
+        // Update the date picker
+        val date = Calendar.getInstance()
+        beer?.let {
+            val dateArray = beer.date.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            date.set(dateArray[2].toInt(), dateArray[1].toInt()-1, dateArray[0].toInt())
+        }
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val dateString = dateFormat.format(date.time)
+        dateText.text = dateString
+        dateText.setOnClickListener {
+            DatePickerDialog(context,
+                    DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                        date.set(year, monthOfYear, dayOfMonth)
+                        dateText.text = dateFormat.format(date.time)
+                    },
+                    // set DatePickerDialog to point to today's date when it loads up
+                    date.get(Calendar.YEAR),
+                    date.get(Calendar.MONTH),
+                    date.get(Calendar.DAY_OF_MONTH)).show()
         }
     }
 
@@ -203,7 +215,6 @@ class AddBeerFragment : Fragment() {
             val apkUri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".provider", file)
             intent.setDataAndType(apkUri, mime)
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//            intent.setDataAndType(uri, mime)
             startActivity(intent)
         } else {
             // Create new intent to go to the Images Activity
@@ -279,10 +290,7 @@ class AddBeerFragment : Fragment() {
         val state = stateEdit.text.toString().trim { it <= ' ' }
         val country = countryEdit.text.toString().trim { it <= ' ' }
         val comments = commentsEdit.text.toString().trim { it <= ' ' }
-        val year = datePicker.year
-        val month = datePicker.month
-        val day = datePicker.dayOfMonth
-        val date = year.toString() + "-" + month + "-" + day
+        val date = dateText.text.toString()
 
         // Check that BeerName has an entry. Popup a toast to alert user.
         if (beerName.isEmpty()) {
@@ -412,10 +420,6 @@ class AddBeerFragment : Fragment() {
         // Create and show the Alert Dialog
         val alertDialog = builder.create()
         alertDialog.show()
-    }
-
-    companion object {
-        internal const val REQUEST_IMAGE_CAPTURE = 1
     }
 }
 
