@@ -2,10 +2,10 @@ package com.wordpress.excelenteadventura.beerjournal
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.os.AsyncTask
 import android.util.Log
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import com.wordpress.excelenteadventura.beerjournal.database.BeerDao
+import kotlinx.coroutines.experimental.launch
 
 /**
  * Repository class to provide an abstraction between the database and
@@ -17,35 +17,20 @@ class BeerRepository private constructor(private val beerDao: BeerDao) {
     val currentBeer = MutableLiveData<Beer?>()
 
     fun insertBeer(beer: Beer) {
-        InsertAsyncTask(beerDao).execute(beer)
+        launch {
+            beerDao.insertBeer(beer)
+        }
     }
 
     fun updateBeer(beer: Beer) {
-        UpdateAsyncTask(beerDao).execute(beer)
+        launch {
+            beerDao.updateBeer(beer)
+        }
     }
 
     fun deleteBeer(beer: Beer) {
-        DeleteAsyncTask(beerDao).execute(beer)
-    }
-
-    private class InsertAsyncTask internal constructor(private val asyncTaskDao: BeerDao) : AsyncTask<Beer, Void, Void>() {
-        override fun doInBackground(vararg params: Beer): Void? {
-            asyncTaskDao.insertBeer(params[0])
-            return null
-        }
-    }
-
-    private class UpdateAsyncTask internal constructor(private val asyncTaskDao: BeerDao) : AsyncTask<Beer, Void, Void>() {
-        override fun doInBackground(vararg params: Beer): Void? {
-            asyncTaskDao.updateBeer(params[0])
-            return null
-        }
-    }
-
-    private class DeleteAsyncTask internal constructor(private val asyncTaskDao: BeerDao) : AsyncTask<Beer, Void, Void>() {
-        override fun doInBackground(vararg params: Beer): Void? {
-            asyncTaskDao.deleteBeer(params[0])
-            return null
+        launch {
+            beerDao.deleteBeer(beer)
         }
     }
 
