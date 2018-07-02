@@ -2,10 +2,12 @@ package com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.DatePickerDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -42,6 +44,8 @@ class AddBeerFragment : Fragment() {
 
     private val LOG_TAG = AddBeerActivity::class.java.simpleName
 
+    private lateinit var act: Activity
+
     // View Model
     private lateinit var viewModel: AddBeerViewModel
 
@@ -68,8 +72,10 @@ class AddBeerFragment : Fragment() {
 
     // TODO: Possibly set default spinner values here.
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        act = activity ?: return null
+
         // Inflate the layout for this fragment
         val fragment = inflater.inflate(R.layout.fragment_add_beer, container, false)
         nameEdit = fragment.edit_beer_name
@@ -87,7 +93,7 @@ class AddBeerFragment : Fragment() {
         beerImageView = fragment.image_beer_photo
 
         // Setup View Model
-        val factory = InjectorUtils.provideAddBeerViewModelFactory(activity)
+        val factory = InjectorUtils.provideAddBeerViewModelFactory(act)
         viewModel = ViewModelProviders.of(this, factory).get(AddBeerViewModel::class.java)
         viewModel.currentBeer.observe(this,
                 Observer { beer ->
@@ -97,32 +103,42 @@ class AddBeerFragment : Fragment() {
 
         // This line enables the fragment to handle menu events
         setHasOptionsMenu(true)
-        // If the intent does not contain a Beer content URI then we are adding a new beer
-        if (currentBeer == null) {
-            activity.title = getString(R.string.add_beer_title)
-            // Invalidate the options menu, so the delete option isn't shown
-            activity.invalidateOptionsMenu()
-        } else activity.title = getString(R.string.edit_beer_title)
+
+        setFragmentTitle()
 
         // On click listener for beer type spinner to show beer type edit text if other is selected
-        typeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(arg0: AdapterView<*>, arg1: View, arg2: Int, arg3: Long) {
-                val item = typeSpinner.selectedItem.toString()
-                Log.i("Selected item : ", item)
-                typeEdit.visibility = (if (item == getString(R.string.other)) View.VISIBLE else View.GONE)
-            }
-            override fun onNothingSelected(arg0: AdapterView<*>) { }
-
-        }
+        typeSpinner.onItemSelectedListener = typeSpinnerItemSelectListener
 
         // On click listener for Add Photo text
-        val takePhoto = fragment.add_beer_take_photo
-        takePhoto.setOnClickListener { startCameraIntent() }
+        fragment.add_beer_take_photo.setOnClickListener { startCameraIntent() }
+//        val takePhoto = fragment.add_beer_take_photo
+//        takePhoto.setOnClickListener { startCameraIntent() }
 
         // On click listener for photo to open imagesActivity
         beerImageView.setOnClickListener( beerImageClickListener )
 
         return fragment
+    }
+
+    private fun setFragmentTitle() {
+        activity?.title = if (currentBeer == null) getString(R.string.add_beer_title) else getString(R.string.edit_beer_title)
+
+//        if (currentBeer == null) {
+//            activity.title = getString(R.string.add_beer_title)
+//            // Invalidate the options menu, so the delete option isn't shown
+//            //TODO: I don't think the line below is necessary?
+////            activity.invalidateOptionsMenu()
+//        } else activity.title = getString(R.string.edit_beer_title)
+    }
+
+    private val typeSpinnerItemSelectListener = object : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(arg0: AdapterView<*>, arg1: View, arg2: Int, arg3: Long) {
+            val item = typeSpinner.selectedItem.toString()
+            Log.i("Selected item : ", item)
+            typeEdit.visibility = (if (item == getString(R.string.other)) View.VISIBLE else View.GONE)
+        }
+        override fun onNothingSelected(arg0: AdapterView<*>) { }
+
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -199,41 +215,41 @@ class AddBeerFragment : Fragment() {
     }
 
     private val beerImageClickListener = { _: View ->
-        val intent: Intent
-        // If the photo is null or empty then don't pass the intent
-        if (photoPath.isEmpty() || photoPath[0].isEmpty()) {
-            startCameraIntent()
-        } else if (photoPath.size == 1) {
-            // Opens the image in gallery
-            val file = File(photoPath[0])
-            val uri = Uri.fromFile(file)
-            intent = Intent(android.content.Intent.ACTION_VIEW)
-            var mime: String? = "*/*"
-            val mimeTypeMap = MimeTypeMap.getSingleton()
-            if (mimeTypeMap.hasExtension(getFileExtensionFromUrl(uri.toString()))) {
-                mime = mimeTypeMap.getMimeTypeFromExtension(getFileExtensionFromUrl(uri.toString()))
-            }
-            val apkUri = FileProvider.getUriForFile(context, context.applicationContext.packageName + ".provider", file)
-            intent.setDataAndType(apkUri, mime)
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            startActivity(intent)
-        } else {
-            // Create new intent to go to the Images Activity
-            intent = Intent(activity, ImagesActivity::class.java)
-            intent.putStringArrayListExtra(PHOTOS_EXTRA, photoPath)
-            intent.putExtra(BEER_NAME_EXTRA, nameEdit.text.toString().trim { it <= ' ' })
-            startActivity(intent)
+        if (photoPath.isEmpty() || photoPath[0].isEmpty()) startCameraIntent()
+        else if (photoPath.size == 1) openImageInGallery()
+        else goToImagesActivity()
+    }
+
+    private fun openImageInGallery() {
+        val file = File(photoPath[0])
+        val uri = Uri.fromFile(file)
+        val intent = Intent(android.content.Intent.ACTION_VIEW)
+        var mime: String? = "*/*"
+        val mimeTypeMap = MimeTypeMap.getSingleton()
+        if (mimeTypeMap.hasExtension(getFileExtensionFromUrl(uri.toString()))) {
+            mime = mimeTypeMap.getMimeTypeFromExtension(getFileExtensionFromUrl(uri.toString()))
         }
+        val apkUri = FileProvider.getUriForFile(act, act.applicationContext.packageName + ".provider", file)
+        intent.setDataAndType(apkUri, mime)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(intent)
+    }
+
+    private fun goToImagesActivity() {
+        val intent = Intent(activity, ImagesActivity::class.java)
+        intent.putStringArrayListExtra(PHOTOS_EXTRA, photoPath)
+        intent.putExtra(BEER_NAME_EXTRA, nameEdit.text.toString().trim { it <= ' ' })
+        startActivity(intent)
     }
 
     private fun startCameraIntent() {
         // Start an intent to open the camera app
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (takePictureIntent.resolveActivity(activity.packageManager) != null) {
+        if (takePictureIntent.resolveActivity(activity?.packageManager) != null) {
             // Create the file where the photo should go
             var photoFile: File? = null
             try {
-                photoFile = Utilities.createImageFile(context)
+                photoFile = Utilities.createImageFile(act)
                 // Get the path for this photo and add it to photoPath arraylist.
                 if (!photoPath.isEmpty() && photoPath[0].isEmpty()) {
                     // If the first photo is empty then replace it.
@@ -252,7 +268,7 @@ class AddBeerFragment : Fragment() {
 
             // Continue if the file was successfully created.
             if (photoFile != null) {
-                val photoURI = FileProvider.getUriForFile(activity, context.applicationContext.packageName + ".provider", photoFile)
+                val photoURI = FileProvider.getUriForFile(act, act.applicationContext.packageName + ".provider", photoFile)
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
             }
@@ -318,7 +334,7 @@ class AddBeerFragment : Fragment() {
             beer.id = currentBeer?.id
             viewModel.updateBeer(beer)
         }
-        activity.finish()
+        activity?.finish()
     }
 
     /**
@@ -327,41 +343,40 @@ class AddBeerFragment : Fragment() {
     private fun deleteBeer() {
         // Only perform the deletion if it is an existing beer
         currentBeer?.let {
-            // TODO delete images associated with the beer item.
-            for (fileName in photoPath) {
-                // Delete image
-                val imageFile = File(fileName)
-                val deleteSuccessful = imageFile.delete()
-                if (deleteSuccessful)
-                    Log.d(LOG_TAG, "Delete successful: $fileName")
-                else
-                    Log.d(LOG_TAG, "Delete failed: $fileName")
-                // Delete small thumbnail
-                val thumbFileName = Utilities.thumbFilePath(fileName, THUMB_SMALL_W)
-                val thumbFile = File(thumbFileName)
-                val thumbDeleteSuccessful = thumbFile.delete()
-                if (thumbDeleteSuccessful)
-                    Log.d(LOG_TAG, "Thumbnail delete successful: $thumbFileName")
-                else
-                    Log.d(LOG_TAG, "Thumbnail delete failed: $thumbFileName")
-                // Delete large thumbnail
-                val thumbLargeFileName = Utilities.thumbFilePath(fileName, THUMB_LARGE_W)
-                val thumbLargeFile = File(thumbLargeFileName)
-                val thumbLargeDeleteSuccessful = thumbFile.delete()
-                if (thumbLargeDeleteSuccessful)
-                    Log.d(LOG_TAG, "Thumbnail delete successful: $thumbLargeFile")
-                else
-                    Log.d(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
-            }
+//            for (fileName in photoPath) {
+//                // Delete image
+//                val imageFile = File(fileName)
+//                val deleteSuccessful = imageFile.delete()
+//                if (deleteSuccessful)
+//                    Log.d(LOG_TAG, "Delete successful: $fileName")
+//                else
+//                    Log.d(LOG_TAG, "Delete failed: $fileName")
+//                // Delete small thumbnail
+//                val thumbFileName = Utilities.thumbFilePath(fileName, THUMB_SMALL_W)
+//                val thumbFile = File(thumbFileName)
+//                val thumbDeleteSuccessful = thumbFile.delete()
+//                if (thumbDeleteSuccessful)
+//                    Log.d(LOG_TAG, "Thumbnail delete successful: $thumbFileName")
+//                else
+//                    Log.d(LOG_TAG, "Thumbnail delete failed: $thumbFileName")
+//                // Delete large thumbnail
+//                val thumbLargeFileName = Utilities.thumbFilePath(fileName, THUMB_LARGE_W)
+//                val thumbLargeFile = File(thumbLargeFileName)
+//                val thumbLargeDeleteSuccessful = thumbFile.delete()
+//                if (thumbLargeDeleteSuccessful)
+//                    Log.d(LOG_TAG, "Thumbnail delete successful: $thumbLargeFile")
+//                else
+//                    Log.d(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
+//            }
             viewModel.deleteBeer(it)
         }
         // Close the activity
-        activity.finish()
+        activity?.finish()
     }
 
     // Options menu code
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        activity.menuInflater.inflate(R.menu.menu_editor, menu)
+        activity?.menuInflater?.inflate(R.menu.menu_editor, menu)
     }
 
     // This allows some menu items to be hidden or made visible.
@@ -369,14 +384,14 @@ class AddBeerFragment : Fragment() {
         super.onPrepareOptionsMenu(menu)
         // If it is a new beer, hide the Delete menu item.
         if (currentBeer == null) {
-            val menuItem = menu!!.findItem(R.id.action_delete)
-            menuItem.isVisible = false
+            val menuItem = menu?.findItem(R.id.action_delete)
+            menuItem?.isVisible = false
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         // Perform different activities based on which item the user clicks
-        when (item!!.itemId) {
+        when (item?.itemId) {
         // Click on save menu item
             R.id.action_save -> {
                 // Save beer, then exit activity
@@ -392,7 +407,7 @@ class AddBeerFragment : Fragment() {
         // Click on android up button in app bar
             android.R.id.home -> {
                 // TODO
-                activity.finish()
+                activity?.finish()
                 return true
             }
         }
@@ -407,7 +422,7 @@ class AddBeerFragment : Fragment() {
     private fun showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message. And click listeners
         // for the positive and negative buttons on the dialog.
-        val builder = AlertDialog.Builder(activity)
+        val builder = AlertDialog.Builder(act)
         builder.setMessage(R.string.delete_dialog_msg)
         builder.setPositiveButton(R.string.delete) { _, _ ->
             // User clicked the delete button so delete Beer

@@ -1,6 +1,7 @@
 package com.wordpress.excelenteadventura.beerjournal.ui.mainActivity
 
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -25,6 +26,9 @@ import kotlinx.android.synthetic.main.fragment_main.view.*
 class MainFragment : Fragment() {
 
     private val LOG_TAG = MainActivity::class.java.simpleName
+
+    private lateinit var act: Activity
+
     // Sort direction
     private val ASC = true
 
@@ -35,11 +39,13 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
+        act = activity ?: return null
+
         // Inflate the layout for this fragment
         val fragmentView = inflater.inflate(R.layout.fragment_main, container, false)
 
         // Setup the recycler view
-        beerListAdapter = BeerListAdapter(context, beerItemClickListener)
+        beerListAdapter = BeerListAdapter(act, beerItemClickListener)
         val recyclerView = fragmentView.main_fragment_recycler_view
         recyclerView.apply {
             adapter = beerListAdapter
@@ -47,7 +53,7 @@ class MainFragment : Fragment() {
         }
 
         // Get a viewmodel and set up the observers
-        val factory = InjectorUtils.provideMainActivityViewModelFactory(activity)
+        val factory = InjectorUtils.provideMainActivityViewModelFactory(act)
         viewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
         viewModel.beers.observe(this,
                 Observer<List<Beer>> {
@@ -57,7 +63,7 @@ class MainFragment : Fragment() {
         )
 
         // Setup the repository
-        repository = InjectorUtils.provideRepository(activity)
+        repository = InjectorUtils.provideRepository(act)
 
         // Set thumbnail sizes
         val numPixW = resources.displayMetrics.widthPixels
@@ -110,7 +116,7 @@ class MainFragment : Fragment() {
 
     // Options menu code
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        activity.menuInflater.inflate(R.menu.menu_main, menu)
+        activity?.menuInflater?.inflate(R.menu.menu_main, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -138,17 +144,17 @@ class MainFragment : Fragment() {
 
     // Creates an alert dialog to allow the user to select their sort order
     private fun createSortOrderAlertDialog() {
-        val values = context.resources.getStringArray(R.array.array_sort_types)
+        val values = act.resources.getStringArray(R.array.array_sort_types)
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
         val sortType = prefs.getString(getString(R.string.preference_sort_order), getString(R.string.sort_beer_name))
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.action_sort_order))
-        builder.setSingleChoiceItems(values, values.indexOf(sortType), { dialog, item ->
+        builder.setSingleChoiceItems(values, values.indexOf(sortType)) { dialog, item ->
             dialog.dismiss()
             val edit = prefs.edit()
             edit.putString(getString(R.string.preference_sort_order), values[item]).apply()
             sortBeers()
-        })
+        }
         val alertDialog = builder.create()
         alertDialog.show()
     }

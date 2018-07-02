@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import com.wordpress.excelenteadventura.beerjournal.BeerRepository
 
+@Suppress("UNCHECKED_CAST")
 /**
  * Factory method that allows us to create a ViewModel with a constructor that takes a
  * [BeerRepository]
