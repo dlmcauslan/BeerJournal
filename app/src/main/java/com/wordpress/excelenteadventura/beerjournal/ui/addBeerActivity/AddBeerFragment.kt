@@ -7,7 +7,6 @@ import android.app.Activity.RESULT_OK
 import android.app.DatePickerDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -72,8 +71,6 @@ class AddBeerFragment : Fragment() {
     // An ArrayList to hold Strings that contain the paths to the photos.
     private var photoPath = ArrayList<String>()
 
-    // TODO: Possibly set default spinner values here.
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         act = activity ?: return null
@@ -136,9 +133,7 @@ class AddBeerFragment : Fragment() {
 
     }
 
-    @SuppressLint("SimpleDateFormat")
     private fun populateUI(beer: Beer?) {
-//            // TODO Handle default values
         beer?.let {
             // Update the edit text views with the attributes for the current beer
             nameEdit.setText(beer.name)
@@ -195,6 +190,12 @@ class AddBeerFragment : Fragment() {
         }
 
         // Update the date picker
+        updateDatePicker(beer)
+
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun updateDatePicker(beer: Beer?) {
         val date = Calendar.getInstance()
         beer?.let {
             val dateArray = beer.date.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -326,19 +327,14 @@ class AddBeerFragment : Fragment() {
         if (beerType == "---") beerType = ""
         val rating = if (ratingDouble == null) 0 else (2*ratingDouble).toInt()
 
-        val beer = Beer(null, beerName, Utilities.listToString(photoPath), beerType, rating, percentage, bitterness, date, comments, breweryName, country, city, state)
+        val beer = Beer(currentBeer?.id, beerName, Utilities.listToString(photoPath), beerType, rating, percentage, bitterness, date, comments, breweryName, country, city, state)
 
         Log.d(LOG_TAG, "name: " + beerName + ", rating: " + rating + ", percentage: " + percentage + ", bitterness: "
                 + bitterness + ", breweryName: " + breweryName + ", date: " + date)
         Log.d(LOG_TAG, "IMAGES: " + Utilities.listToString(photoPath))
 
-//         Determine if this is a new or existing Beer
-        if (currentBeer == null) {
-            viewModel.insertBeer(beer)
-        } else {
-            beer.id = currentBeer?.id
-            viewModel.updateBeer(beer)
-        }
+        // Insert/update the beer into the database
+        viewModel.saveBeer(beer)
         activity?.finish()
     }
 
@@ -348,31 +344,6 @@ class AddBeerFragment : Fragment() {
     private fun deleteBeer() {
         // Only perform the deletion if it is an existing beer
         currentBeer?.let {
-//            for (fileName in photoPath) {
-//                // Delete image
-//                val imageFile = File(fileName)
-//                val deleteSuccessful = imageFile.delete()
-//                if (deleteSuccessful)
-//                    Log.d(LOG_TAG, "Delete successful: $fileName")
-//                else
-//                    Log.d(LOG_TAG, "Delete failed: $fileName")
-//                // Delete small thumbnail
-//                val thumbFileName = Utilities.thumbFilePath(fileName, THUMB_SMALL_W)
-//                val thumbFile = File(thumbFileName)
-//                val thumbDeleteSuccessful = thumbFile.delete()
-//                if (thumbDeleteSuccessful)
-//                    Log.d(LOG_TAG, "Thumbnail delete successful: $thumbFileName")
-//                else
-//                    Log.d(LOG_TAG, "Thumbnail delete failed: $thumbFileName")
-//                // Delete large thumbnail
-//                val thumbLargeFileName = Utilities.thumbFilePath(fileName, THUMB_LARGE_W)
-//                val thumbLargeFile = File(thumbLargeFileName)
-//                val thumbLargeDeleteSuccessful = thumbFile.delete()
-//                if (thumbLargeDeleteSuccessful)
-//                    Log.d(LOG_TAG, "Thumbnail delete successful: $thumbLargeFile")
-//                else
-//                    Log.d(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
-//            }
             viewModel.deleteBeer(it)
         }
         // Close the activity
@@ -411,15 +382,12 @@ class AddBeerFragment : Fragment() {
             }
         // Click on android up button in app bar
             android.R.id.home -> {
-                // TODO
                 activity?.finish()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
     }
-
-    // TODO implement onBAckPressed method
 
     /**
      * Prompts the user to make sure they want to delete the beer.

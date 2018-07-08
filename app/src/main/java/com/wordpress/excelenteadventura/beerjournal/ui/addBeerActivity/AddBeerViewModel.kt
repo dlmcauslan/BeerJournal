@@ -16,12 +16,12 @@ class AddBeerViewModel(private val repository: BeerRepository): ViewModel() {
 
     val currentBeer: LiveData<Beer?> = repository.currentBeer
 
-    fun insertBeer(beer: Beer) {
-        repository.insertBeer(beer)
-    }
-
-    fun updateBeer(beer: Beer) {
-        repository.updateBeer(beer)
+    fun saveBeer(beer: Beer) {
+        if (beer.id == null) {
+            repository.insertBeer(beer)
+        } else {
+            repository.updateBeer(beer)
+        }
     }
 
     fun deleteBeer(beer: Beer) {
