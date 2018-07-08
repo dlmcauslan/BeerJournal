@@ -27,29 +27,23 @@ class AddBeerViewModel(private val repository: BeerRepository): ViewModel() {
     fun deleteBeer(beer: Beer) {
         for (fileName in Utilities.stringToList(beer.photoLocation)) {
             // Delete image
-            val imageFile = File(fileName)
-            val deleteSuccessful = imageFile.delete()
-            if (deleteSuccessful)
-                Log.d(LOG_TAG, "Delete successful: $fileName")
-            else
-                Log.d(LOG_TAG, "Delete failed: $fileName")
+            deleteImage(fileName)
             // Delete small thumbnail
             val thumbFileName = Utilities.thumbFilePath(fileName, THUMB_SMALL_W)
-            val thumbFile = File(thumbFileName)
-            val thumbDeleteSuccessful = thumbFile.delete()
-            if (thumbDeleteSuccessful)
-                Log.d(LOG_TAG, "Thumbnail delete successful: $thumbFileName")
-            else
-                Log.d(LOG_TAG, "Thumbnail delete failed: $thumbFileName")
+            deleteImage(thumbFileName)
             // Delete large thumbnail
             val thumbLargeFileName = Utilities.thumbFilePath(fileName, THUMB_LARGE_W)
-            val thumbLargeFile = File(thumbLargeFileName)
-            val thumbLargeDeleteSuccessful = thumbFile.delete()
-            if (thumbLargeDeleteSuccessful)
-                Log.d(LOG_TAG, "Thumbnail delete successful: $thumbLargeFile")
-            else
-                Log.d(LOG_TAG, "Thumbnail delete failed: $thumbLargeFileName")
+            deleteImage(thumbLargeFileName)
         }
         repository.deleteBeer(beer)
+    }
+
+    private fun deleteImage(fileName: String) {
+        val imageFile = File(fileName)
+        val deleteSuccessful = imageFile.delete()
+        if (deleteSuccessful)
+            Log.d(LOG_TAG, "Image delete successful: $fileName")
+        else
+            Log.d(LOG_TAG, "Image delete failed: $fileName")
     }
 }
