@@ -22,7 +22,26 @@
             android:layout_marginBottom="4dp"
             android:layout_gravity="center_vertical"
             android:layout_marginRight="8dp"
-            android:contentDescription="@string/an_image_of_a_beer"/>
+            android:contentDescription="@string/an_image_of_a_beer"
+            android:visibility="gone"
+            tools:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/beer_list_item_image_default"
+            android:text="@string/no_photo"
+            android:gravity="center"
+            android:background="@drawable/photo_background"
+            android:textColor="@color/colorAccent"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="8dp"
+            android:contentDescription="@string/an_image_of_a_beer"
+            android:visibility="visible"
+            tools:visibility="visible"/>
 
         <LinearLayout
             android:layout_width="0dp"

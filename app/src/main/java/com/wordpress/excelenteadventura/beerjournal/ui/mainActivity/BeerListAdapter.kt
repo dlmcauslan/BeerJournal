@@ -39,6 +39,7 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
         private val percentageView: TextView = itemView.list_item_percentage
         private val rating: TextView = itemView.list_item_rating
         private val beerImage: ImageView = itemView.beer_list_item_image
+        private val defaultImage = itemView.beer_list_item_image_default
 
         @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         fun bind(beer: Beer, listener: OnItemClickListener) {
@@ -51,9 +52,12 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
             // Update the image view
             val photoPaths = Utilities.stringToList(beer.photoLocation)
             if (photoPaths.isNotEmpty()) {
+                beerImage.visibility = View.VISIBLE
+                defaultImage.visibility = View.GONE
                 Utilities.setThumbnailFromWidth(beerImage, photoPaths[0], THUMB_SMALL_W)
             } else {
-                beerImage.setImageDrawable(context.getDrawable(R.drawable.ic_default_image_foreground))
+                beerImage.visibility = View.GONE
+                defaultImage.visibility = View.VISIBLE
             }
             itemView.setOnClickListener { listener.onItemClick(beer) }
         }

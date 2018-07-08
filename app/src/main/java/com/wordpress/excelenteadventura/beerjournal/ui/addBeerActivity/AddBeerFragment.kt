@@ -27,6 +27,7 @@ import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity.ImagesActivity
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_LARGE_W
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_SMALL_W
+import kotlinx.android.synthetic.main.fragment_add_beer.*
 import kotlinx.android.synthetic.main.fragment_add_beer.view.*
 import java.io.File
 import java.io.IOException
@@ -66,6 +67,7 @@ class AddBeerFragment : Fragment() {
     private lateinit var ratingSpinner: Spinner
     private lateinit var dateText: TextView
     private lateinit var beerImageView: ImageView
+    private lateinit var defaultImageView: TextView
 
     // An ArrayList to hold Strings that contain the paths to the photos.
     private var photoPath = ArrayList<String>()
@@ -91,6 +93,7 @@ class AddBeerFragment : Fragment() {
         ratingSpinner = fragment.spinner_beer_rating
         dateText = fragment.edit_date
         beerImageView = fragment.image_beer_photo
+        defaultImageView = fragment.default_image
 
         // Setup View Model
         val factory = InjectorUtils.provideAddBeerViewModelFactory(act)
@@ -111,11 +114,10 @@ class AddBeerFragment : Fragment() {
 
         // On click listener for Add Photo text
         fragment.add_beer_take_photo.setOnClickListener { startCameraIntent() }
-//        val takePhoto = fragment.add_beer_take_photo
-//        takePhoto.setOnClickListener { startCameraIntent() }
 
         // On click listener for photo to open imagesActivity
         beerImageView.setOnClickListener( beerImageClickListener )
+        defaultImageView.setOnClickListener{ startCameraIntent() }
 
         return fragment
     }
@@ -181,7 +183,14 @@ class AddBeerFragment : Fragment() {
             // Update the image view
             photoPath = Utilities.stringToList(it.photoLocation)
             if (photoPath.isNotEmpty()) {
+                beerImageView.visibility = View.VISIBLE
+                add_beer_take_photo.visibility = View.VISIBLE
+                defaultImageView.visibility = View.GONE
                 Utilities.setThumbnailFromWidth(beerImageView, photoPath[0], THUMB_LARGE_W)
+            } else {
+                beerImageView.visibility = View.GONE
+                add_beer_take_photo.visibility = View.GONE
+                defaultImageView.visibility = View.VISIBLE
             }
         }
 
@@ -276,6 +285,9 @@ class AddBeerFragment : Fragment() {
 //             thumbnail to the imageview.
             Utilities.createThumbnail(photoPath[numPhotos], THUMB_SMALL_W)
             Utilities.createThumbnail(photoPath[numPhotos], THUMB_LARGE_W)
+            beerImageView.visibility = View.VISIBLE
+            add_beer_take_photo.visibility = View.VISIBLE
+            defaultImageView.visibility = View.GONE
             Utilities.setThumbnailFromWidth(beerImageView, photoPath[0], THUMB_LARGE_W)
         } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
             // Otherwise remove the path because the photo was not saved
