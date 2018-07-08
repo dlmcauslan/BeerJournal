@@ -8,12 +8,12 @@
         android:id="@+id/action_asc_desc"
         android:title="@string/action_asc_desc"
         app:showAsAction="always"
-        android:icon="@drawable/ic_swap_vert_black_24dp"/>
+        android:icon="@drawable/ic_swap_vert_white_24dp"/>
 
     <item
         android:id="@+id/action_sort_order"
         android:title="@string/action_sort_order"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_sort_black_24dp"/>
+        android:icon="@drawable/ic_sort_white_24dp"/>
 
 </menu>

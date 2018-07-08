@@ -101,13 +101,13 @@ class AddBeerFragment : Fragment() {
         viewModel.currentBeer.observe(this,
                 Observer { beer ->
                     currentBeer = beer
-                    populateUI(beer) }
+                    populateUI(beer)
+                    setFragmentTitle(beer)
+                }
         )
 
         // This line enables the fragment to handle menu events
         setHasOptionsMenu(true)
-
-        setFragmentTitle()
 
         // On click listener for beer type spinner to show beer type edit text if other is selected
         typeSpinner.onItemSelectedListener = typeSpinnerItemSelectListener
@@ -122,8 +122,8 @@ class AddBeerFragment : Fragment() {
         return fragment
     }
 
-    private fun setFragmentTitle() {
-        activity?.title = if (currentBeer == null) getString(R.string.add_beer_title) else getString(R.string.edit_beer_title)
+    private fun setFragmentTitle(beer: Beer?) {
+        activity?.title = if (beer == null) getString(R.string.add_beer_title) else getString(R.string.edit_beer_title)
     }
 
     private val typeSpinnerItemSelectListener = object : AdapterView.OnItemSelectedListener {
