@@ -33,7 +33,6 @@ class MainFragment : Fragment() {
     private val ASC = true
 
     private lateinit var viewModel: MainViewModel
-    private lateinit var repository: BeerRepository
     private lateinit var beerListAdapter: BeerListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -62,9 +61,6 @@ class MainFragment : Fragment() {
                 }
         )
 
-        // Setup the repository
-        repository = InjectorUtils.provideRepository(act)
-
         // Set thumbnail sizes
         val numPixW = resources.displayMetrics.widthPixels
         val numPixH = resources.displayMetrics.heightPixels
@@ -83,7 +79,7 @@ class MainFragment : Fragment() {
         // Setup Floating Action Button to open next activity
         fragmentView.floating_action_button.setOnClickListener {
             // Set current beer to null
-            repository.currentBeer.value = null
+            viewModel.setCurrentBeer(null)
             // Launches AddBeerActivity
             startActivity(Intent(activity, AddBeerActivity::class.java))
         }
@@ -107,7 +103,7 @@ class MainFragment : Fragment() {
     private val beerItemClickListener = object : BeerListAdapter.OnItemClickListener {
         override fun onItemClick(item: Beer) {
             // Set the current beer
-            repository.currentBeer.value = item
+            viewModel.setCurrentBeer(item)
 
             // Create new intent to go to the AddBeer Activity
             startActivity(Intent(activity, AddBeerActivity::class.java))

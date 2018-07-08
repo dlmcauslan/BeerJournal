@@ -5,8 +5,11 @@ import android.arch.lifecycle.ViewModel
 import com.wordpress.excelenteadventura.beerjournal.BeerRepository
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
 
-class MainViewModel(repository: BeerRepository): ViewModel() {
+class MainViewModel(private val repository: BeerRepository): ViewModel() {
 
     val beers: LiveData<List<Beer>> = repository.beers
 
+    fun setCurrentBeer(beer: Beer?) {
+       repository.currentBeer.value = beer
+    }
 }
