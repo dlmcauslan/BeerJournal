@@ -122,17 +122,10 @@ class AddBeerFragment : Fragment() {
 
     private fun setFragmentTitle() {
         activity?.title = if (currentBeer == null) getString(R.string.add_beer_title) else getString(R.string.edit_beer_title)
-
-//        if (currentBeer == null) {
-//            activity.title = getString(R.string.add_beer_title)
-//            // Invalidate the options menu, so the delete option isn't shown
-//            //TODO: I don't think the line below is necessary?
-////            activity.invalidateOptionsMenu()
-//        } else activity.title = getString(R.string.edit_beer_title)
     }
 
     private val typeSpinnerItemSelectListener = object : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(arg0: AdapterView<*>, arg1: View, arg2: Int, arg3: Long) {
+        override fun onItemSelected(arg0: AdapterView<*>, arg1: View?, arg2: Int, arg3: Long) {
             val item = typeSpinner.selectedItem.toString()
             Log.i("Selected item : ", item)
             typeEdit.visibility = (if (item == getString(R.string.other)) View.VISIBLE else View.GONE)
