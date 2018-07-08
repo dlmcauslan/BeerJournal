@@ -9,8 +9,9 @@ import com.wordpress.excelenteadventura.beerjournal.database.Beer
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_LARGE_W
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_SMALL_W
 import java.io.File
+import javax.inject.Inject
 
-class AddBeerViewModel(private val repository: BeerRepository): ViewModel() {
+class AddBeerViewModel @Inject constructor(private val repository: BeerRepository): ViewModel() {
 
     private val LOG_TAG = AddBeerActivity::class.java.simpleName
 

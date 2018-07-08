@@ -12,12 +12,12 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
-import com.wordpress.excelenteadventura.beerjournal.BeerRepository
-import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
+import com.wordpress.excelenteadventura.beerjournal.dependencyInjection.*
 import com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity
 import kotlinx.android.synthetic.main.fragment_main.view.*
+import javax.inject.Inject
 
 
 /**
@@ -33,8 +33,15 @@ class MainFragment : Fragment() {
     private val ASC = true
 
     private lateinit var viewModel: MainViewModel
-    private lateinit var repository: BeerRepository
+    @Inject lateinit var viewModelFactory: MainViewModelFactory
     private lateinit var beerListAdapter: BeerListAdapter
+
+    private val viewModelComponent: MainViewModelComponent by lazy {
+        DaggerMainViewModelComponent.builder()
+                .mainViewModelModule(MainViewModelModule())
+                .databaseModule(DatabaseModule(act))
+                .build()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -44,17 +51,13 @@ class MainFragment : Fragment() {
         // Inflate the layout for this fragment
         val fragmentView = inflater.inflate(R.layout.fragment_main, container, false)
 
-        // Setup the recycler view
-        beerListAdapter = BeerListAdapter(act, beerItemClickListener)
-        val recyclerView = fragmentView.main_fragment_recycler_view
-        recyclerView.apply {
-            adapter = beerListAdapter
-            layoutManager = LinearLayoutManager(context)
-        }
+//        // Setup dependency injection
+//        AndroidSupportInjection.inject(this)
 
-        // Get a viewmodel and set up the observers
-        val factory = InjectorUtils.provideMainActivityViewModelFactory(act)
-        viewModel = ViewModelProviders.of(this, factory).get(MainViewModel::class.java)
+//        // Get a viewmodel and set up the observers
+        viewModelFactory = viewModelComponent.getMainViewModelFactory()
+//        val factory = InjectorUtils.provideMainActivityViewModelFactory(act)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
         viewModel.beers.observe(this,
                 Observer<List<Beer>> {
                     beers -> beerListAdapter.setBeers(beers!!)
@@ -62,8 +65,13 @@ class MainFragment : Fragment() {
                 }
         )
 
-        // Setup the repository
-        repository = InjectorUtils.provideRepository(act)
+        // Setup the recycler view
+        beerListAdapter = BeerListAdapter(act, beerItemClickListener)
+        val recyclerView = fragmentView.main_fragment_recycler_view
+        recyclerView.apply {
+            adapter = beerListAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
 
         // Set thumbnail sizes
         val numPixW = resources.displayMetrics.widthPixels
@@ -83,7 +91,7 @@ class MainFragment : Fragment() {
         // Setup Floating Action Button to open next activity
         fragmentView.floating_action_button.setOnClickListener {
             // Set current beer to null
-            repository.currentBeer.value = null
+            viewModel.setCurrentBeer(null)
             // Launches AddBeerActivity
             startActivity(Intent(activity, AddBeerActivity::class.java))
         }
@@ -107,7 +115,7 @@ class MainFragment : Fragment() {
     private val beerItemClickListener = object : BeerListAdapter.OnItemClickListener {
         override fun onItemClick(item: Beer) {
             // Set the current beer
-            repository.currentBeer.value = item
+            viewModel.setCurrentBeer(item)
 
             // Create new intent to go to the AddBeer Activity
             startActivity(Intent(activity, AddBeerActivity::class.java))

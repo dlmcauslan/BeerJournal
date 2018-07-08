@@ -10,19 +10,19 @@ import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainViewMode
  */
 object InjectorUtils {
 
-    fun provideRepository(context: Context): BeerRepository {
-        val database =  BeerDataBase.getDatabase(context.applicationContext)
-        return BeerRepository.getInstance(database.beerDao())
-    }
+//    fun provideRepository(context: Context): BeerRepository {
+//        val database =  BeerDataBase.getDatabase(context.applicationContext)
+//        return BeerRepository.getInstance(database.beerDao())
+//    }
 
-    fun provideAddBeerViewModelFactory(context: Context): AddBeerViewModelFactory {
-        val repository = provideRepository(context.applicationContext)
-        return AddBeerViewModelFactory(repository)
-    }
+//    fun provideAddBeerViewModelFactory(context: Context): AddBeerViewModelFactory {
+//        val repository = provideRepository(context.applicationContext)
+//        return AddBeerViewModelFactory(repository)
+//    }
 
-    fun provideMainActivityViewModelFactory(context: Context): MainViewModelFactory {
-        val repository = provideRepository(context.applicationContext)
-        return MainViewModelFactory(repository)
-    }
+//    fun provideMainActivityViewModelFactory(context: Context): MainViewModelFactory {
+//        val repository = provideRepository(context.applicationContext)
+//        return MainViewModelFactory(repository)
+//    }
 
 }

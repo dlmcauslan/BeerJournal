@@ -7,7 +7,6 @@ import android.app.Activity.RESULT_OK
 import android.app.DatePickerDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -20,10 +19,13 @@ import android.view.*
 import android.webkit.MimeTypeMap
 import android.webkit.MimeTypeMap.getFileExtensionFromUrl
 import android.widget.*
-import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
+import com.wordpress.excelenteadventura.beerjournal.dependencyInjection.AddBeerViewModelComponent
+import com.wordpress.excelenteadventura.beerjournal.dependencyInjection.AddBeerViewModelModule
+import com.wordpress.excelenteadventura.beerjournal.dependencyInjection.DaggerAddBeerViewModelComponent
+import com.wordpress.excelenteadventura.beerjournal.dependencyInjection.DatabaseModule
 import com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity.ImagesActivity
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_LARGE_W
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_SMALL_W
@@ -32,6 +34,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 internal const val REQUEST_IMAGE_CAPTURE = 1
 internal const val PHOTOS_EXTRA = "com.wordpress.excelenteadventura.beerjournal.photosExtra"
@@ -47,7 +50,15 @@ class AddBeerFragment : Fragment() {
     private lateinit var act: Activity
 
     // View Model
+    @Inject lateinit var viewModelFactory: AddBeerViewModelFactory
     private lateinit var viewModel: AddBeerViewModel
+
+    private val viewModelComponent: AddBeerViewModelComponent by lazy {
+        DaggerAddBeerViewModelComponent.builder()
+                .addBeerViewModelModule(AddBeerViewModelModule())
+                .databaseModule(DatabaseModule(act))
+                .build()
+    }
 
     // Current beer
     private var currentBeer: Beer? = null
@@ -93,8 +104,9 @@ class AddBeerFragment : Fragment() {
         beerImageView = fragment.image_beer_photo
 
         // Setup View Model
-        val factory = InjectorUtils.provideAddBeerViewModelFactory(act)
-        viewModel = ViewModelProviders.of(this, factory).get(AddBeerViewModel::class.java)
+//        val factory = InjectorUtils.provideAddBeerViewModelFactory(act)
+        viewModelFactory = viewModelComponent.getAddBeerViewModelFactory()
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(AddBeerViewModel::class.java)
         viewModel.currentBeer.observe(this,
                 Observer { beer ->
                     currentBeer = beer
