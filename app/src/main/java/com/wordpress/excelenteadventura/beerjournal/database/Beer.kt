@@ -6,7 +6,7 @@ import android.arch.persistence.room.PrimaryKey
 
 @Entity(tableName = "beer_table")
 data class Beer(
-        @PrimaryKey(autoGenerate = true) var id: Long? = null,
+        @PrimaryKey(autoGenerate = true) var id: Long?,
         @ColumnInfo(name = "name") var name: String = "",
         @ColumnInfo(name = "photo_location") var photoLocation: String = "",
         @ColumnInfo(name = "type") var type: String = "",
