@@ -52,7 +52,7 @@ class BeerListAdapter(val context: Context, private val listener: OnItemClickLis
 
     override fun onBindViewHolder(holder: BeerViewHolder, position: Int) {
         if (beers.isNotEmpty()) {
-            holder.bind(beers[position].toAdapterViewModel(context), position, listener)
+            holder.bind(BeerItemViewModel(context, beers[position]), position, listener)
         }
     }
 
