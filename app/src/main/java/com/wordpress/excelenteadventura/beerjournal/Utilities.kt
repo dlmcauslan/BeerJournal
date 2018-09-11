@@ -8,6 +8,7 @@ import android.graphics.Matrix
 import android.media.ExifInterface
 import android.os.Environment
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import java.io.File
 import java.io.FileOutputStream
@@ -36,58 +37,10 @@ object Utilities {
         // Create an image file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val imageFileName = "BeerJournal" + timeStamp + "_"
-        //        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
 
         return File.createTempFile(imageFileName, ".jpg", storageDir)
     }
-
-//    /**
-//     * Loads an image from the phones storage
-//     * @param context
-//     * @param imageName - filename of image to load
-//     * @return - the loaded image.
-//     */
-//    fun loadImage(context: Context, imageName: String): Bitmap? {
-//        var bitmap: Bitmap? = null
-//        try {
-//            val fiStream = FileInputStream(File(imageName))
-//            bitmap = BitmapFactory.decodeStream(fiStream)
-//            fiStream.close()
-//        } catch (e: Exception) {
-//            Log.e(LOG_TAG, "Error loading image.")
-//        }
-//        return bitmap
-//    }
-//
-//    fun setImage(imageView: ImageView, photoPath: String) {
-//        // Get the dimensions of the View
-//        val targetW = imageView.width
-//        val targetH = imageView.height
-//
-//        // Get the dimensions of the bitmap
-//        val bmOptions = BitmapFactory.Options()
-//        bmOptions.inJustDecodeBounds = true
-//        BitmapFactory.decodeFile(photoPath, bmOptions)
-//        val photoW = bmOptions.outWidth
-//        val photoH = bmOptions.outHeight
-//
-//        // Determine how much to scale down the image for the editor screen.
-////        Log.d(LOG_TAG, "w: " + targetW + ", h: " + targetH + ", w2: " + photoW + ", h2: " + photoH);
-//        // To stop crashing do a default scaling of 8 if either targetW or targetH are 0
-//        var scaleFactor = 8
-//        if (targetH > 0 && targetW > 0) scaleFactor = Math.min(photoW/targetW, photoH/targetH)
-//        Log.d(LOG_TAG, "Scale factor: " + scaleFactor)
-//
-//        // Decode the image file into a Bitmap sized to fill the View
-//        bmOptions.inJustDecodeBounds = false
-//        bmOptions.inSampleSize = scaleFactor
-//        bmOptions.inPurgeable = true
-//
-//        val bitmap = BitmapFactory.decodeFile(photoPath, bmOptions)
-//        imageView.setImageBitmap(bitmap)
-//    }
-
 
     /**
      * From the provided photoPath and thumbNailWidth, scales the photo and creates a thumbnail
@@ -183,4 +136,8 @@ object Utilities {
     fun stringToList(listString: String): ArrayList<String> {
         return ArrayList(Arrays.asList(*listString.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
     }
+}
+
+fun View.visible(isVisible: Boolean) {
+    visibility = if (isVisible) View.VISIBLE else View.GONE
 }

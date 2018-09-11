@@ -10,8 +10,8 @@ import com.wordpress.excelenteadventura.beerjournal.BeerRepository
  */
 class AddBeerViewModelFactory(private val repository: BeerRepository) : ViewModelProvider.NewInstanceFactory() {
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
         return AddBeerViewModel(repository) as T
     }
 }
