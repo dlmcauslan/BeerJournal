@@ -1,33 +1,30 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="8dp"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp"
-    android:paddingTop="8dp"
-    tools:context="com.wordpress.excelenteadventura.beerjournal.MainFragment">
+    tools:context=".ui.mainActivity.MainFragment">
 
-    <ListView
-        android:id="@+id/main_fragment_list_view"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/main_fragment_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:listitem="@layout/beer_adaptor_list_item"/>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/floating_action_button"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
+        android:src="@drawable/ic_beer"
         app:fabSize="normal"
         app:backgroundTint="@color/colorAccent"
         app:elevation="4dp"
-        />
-
-
+        android:focusable="true" />
 
 </RelativeLayout>

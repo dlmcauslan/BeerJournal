@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".ui.mainActivity.MainActivity">
 
     <item
         android:id="@+id/action_asc_desc"
         android:title="@string/action_asc_desc"
         app:showAsAction="always"
-        android:icon="@drawable/ic_asc_desc"/>
+        android:icon="@drawable/ic_swap_vert_white_24dp"/>
 
     <item
         android:id="@+id/action_sort_order"
         android:title="@string/action_sort_order"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_sort"/>
+        android:icon="@drawable/ic_sort_white_24dp"/>
 
 </menu>

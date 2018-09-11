@@ -22,7 +22,7 @@
 
     <style name="AddBeer_TextStyle">
         <item name="android:textColor">@color/colorPrimaryDark</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <!--<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />-->

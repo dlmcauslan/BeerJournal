@@ -3,6 +3,12 @@
     <string name="add_beer_title">Add A Beer</string>
     <string name="edit_beer_title">Edit Beer</string>
 
+    <!-- Adapter strings-->
+    <string name="default_field_string">Unknown</string>
+    <string name="adapter_beer_type">%1$s%2$s</string>
+    <string name="adapter_brewery">%1$s, %2$s</string>
+    <string name="adapter_rating">%1s/5</string>
+
     <!--Options menu strings-->
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
@@ -44,7 +50,7 @@
     <string name="add_beer_bitterness">Bitterness</string>
     <string name="add_beer_IBU">IBU</string>
     <string name="add_beer_button">Add Beer</string>
-    <string name="add_beer_take_photo">TAKE PHOTO</string>
+    <string name="add_beer_take_photo">ADD PHOTO</string>
 
     <!--Form hints-->
     <string name="add_beer_city">City</string>
@@ -73,6 +79,7 @@
 
     <!--Beer types-->
     <string name="other">Other</string>
+    <string name="apa">American Pale Ale</string>
     <string name="pale_ale">Pale Ale</string>
     <string name="ipa">India Pale Ale</string>
     <string name="porter">Porter</string>
@@ -89,6 +96,8 @@
     <string name="sour">Sour Beer</string>
     <string name="beer_not_chosen">---</string>
     <string name="unknown">Unknown</string>
+    <string name="an_image_of_a_beer">An image of a beer</string>
+    <string name="no_photo">No Photo</string>
 
 
     <!-- These are the options displayed in the rating drop-down Spinner -->

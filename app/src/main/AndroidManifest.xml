@@ -12,61 +12,45 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_beer_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddBeerActivity"
+            android:name="com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity"
             android:label="@string/add_beer_title"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".MainActivity"
             android:theme="@style/EditorTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wordpress.excelenteadventura.beerjournal.MainActivity" />
+                android:value="com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.MainActivity" />
         </activity>
-
         <activity
-            android:name=".ImagesActivity">
-            <!--android:parentActivityName=".AddBeerActivity">-->
-            <!--<meta-data-->
-                <!--android:name="android.support.PARENT_ACTIVITY"-->
-                <!--android:value="com.wordpress.excelenteadventura.beerjournal.AddBeerActivity" />-->
-        </activity>
-
-        <activity
-            android:name=".SortOrderActivity"
-            android:label="@string/action_sort_order">
+            android:name="com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity.ImagesActivity"
+            android:label="image activity"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/EditorTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wordpress.excelenteadventura.beerjournal.MainActivity" />
+                android:value="com.wordpress.excelenteadventura.beerjournal.ui.addBeerActivity.AddBeerActivity" />
         </activity>
-
-
-        <provider
-            android:name=".database.BeerProvider"
-            android:authorities="com.wordpress.excelenteadventura.beerjournal"
-            android:exported="false" />
 
         <!-- File provider for storing camera images -->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.android.fileprovider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
 
     </application>
 

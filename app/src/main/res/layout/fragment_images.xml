@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:numColumns="2"
     android:id="@+id/images_grid_view"
-    tools:context="com.wordpress.excelenteadventura.beerjournal.ImagesFragment">
+    tools:context="com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity.ImagesFragment">
 
     <!--IN PORTRAIT MODE THIS SHOULD BE 3 COLUMNS-->
 
