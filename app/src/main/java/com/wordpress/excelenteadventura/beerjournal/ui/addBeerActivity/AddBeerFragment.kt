@@ -23,11 +23,12 @@ import com.wordpress.excelenteadventura.beerjournal.InjectorUtils
 import com.wordpress.excelenteadventura.beerjournal.R
 import com.wordpress.excelenteadventura.beerjournal.Utilities
 import com.wordpress.excelenteadventura.beerjournal.database.Beer
+import com.wordpress.excelenteadventura.beerjournal.databinding.FragmentAddBeerBinding
 import com.wordpress.excelenteadventura.beerjournal.ui.imagesActivity.ImagesActivity
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_LARGE_W
 import com.wordpress.excelenteadventura.beerjournal.ui.mainActivity.THUMB_SMALL_W
+import com.wordpress.excelenteadventura.beerjournal.visible
 import kotlinx.android.synthetic.main.fragment_add_beer.*
-import kotlinx.android.synthetic.main.fragment_add_beer.view.*
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -53,14 +54,6 @@ class AddBeerFragment : Fragment() {
     private var currentBeer: Beer? = null
 
     // Data edit fields
-    private lateinit var nameEdit: EditText
-    private lateinit var percentageEdit: EditText
-    private lateinit var bitternessEdit: EditText
-    private lateinit var breweryNameEdit: EditText
-    private lateinit var cityEdit: EditText
-    private lateinit var stateEdit: EditText
-    private lateinit var countryEdit: EditText
-    private lateinit var commentsEdit: EditText
     private lateinit var typeSpinner: Spinner
     private lateinit var typeEdit: EditText
     private lateinit var ratingSpinner: Spinner
@@ -76,21 +69,13 @@ class AddBeerFragment : Fragment() {
         act = activity ?: return null
 
         // Inflate the layout for this fragment
-        val fragment = inflater.inflate(R.layout.fragment_add_beer, container, false)
-        nameEdit = fragment.edit_beer_name
-        percentageEdit = fragment.edit_beer_percentage
-        bitternessEdit = fragment.edit_beer_bitterness
-        breweryNameEdit = fragment.edit_brewery_name
-        cityEdit = fragment.edit_city
-        stateEdit = fragment.edit_state
-        countryEdit = fragment.edit_country
-        commentsEdit = fragment.edit_beer_comments
-        typeSpinner = fragment.spinner_beer_type
-        typeEdit = fragment.edit_beer_type
-        ratingSpinner = fragment.spinner_beer_rating
-        dateText = fragment.edit_date
-        beerImageView = fragment.image_beer_photo
-        defaultImageView = fragment.default_image
+        val binding = FragmentAddBeerBinding.inflate(inflater, container, false)
+        typeSpinner = binding.spinnerBeerType
+        typeEdit = binding.editBeerType
+        ratingSpinner = binding.spinnerBeerRating
+        dateText = binding.editDate
+        beerImageView = binding.imageBeerPhoto
+        defaultImageView = binding.defaultImage
 
         // Setup View Model
         val factory = InjectorUtils.provideAddBeerViewModelFactory(act)
@@ -98,6 +83,7 @@ class AddBeerFragment : Fragment() {
         viewModel.currentBeer.observe(this,
                 Observer { beer ->
                     currentBeer = beer
+                    binding.beer = beer
                     populateUI(beer)
                     setFragmentTitle(beer)
                 }
@@ -110,24 +96,24 @@ class AddBeerFragment : Fragment() {
         typeSpinner.onItemSelectedListener = typeSpinnerItemSelectListener
 
         // On click listener for Add Photo text
-        fragment.add_beer_take_photo.setOnClickListener { startCameraIntent() }
+        binding.addBeerTakePhoto.setOnClickListener { startCameraIntent() }
 
         // On click listener for photo to open imagesActivity
         beerImageView.setOnClickListener( beerImageClickListener )
         defaultImageView.setOnClickListener{ startCameraIntent() }
 
-        return fragment
+        return binding.root
     }
 
     private fun setFragmentTitle(beer: Beer?) {
-        activity?.title = if (beer == null) getString(R.string.add_beer_title) else getString(R.string.edit_beer_title)
+        activity?.title = getString( if (beer == null) R.string.add_beer_title else R.string.edit_beer_title )
     }
 
     private val typeSpinnerItemSelectListener = object : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(arg0: AdapterView<*>, arg1: View?, arg2: Int, arg3: Long) {
             val item = typeSpinner.selectedItem.toString()
             Log.i("Selected item : ", item)
-            typeEdit.visibility = (if (item == getString(R.string.other)) View.VISIBLE else View.GONE)
+            typeEdit.visible(item == getString(R.string.other))
         }
         override fun onNothingSelected(arg0: AdapterView<*>) { }
 
@@ -135,24 +121,7 @@ class AddBeerFragment : Fragment() {
 
     private fun populateUI(beer: Beer?) {
         beer?.let {
-            // Update the edit text views with the attributes for the current beer
-            nameEdit.setText(beer.name)
-            breweryNameEdit.setText(beer.brewery)
-            cityEdit.setText(beer.city)
-            stateEdit.setText(beer.state)
-            countryEdit.setText(beer.country)
-            commentsEdit.setText(beer.comments)
-            val percentage = beer.percentage
-            if (percentage < 0)
-                percentageEdit.setText("")
-            else
-                percentageEdit.setText(percentage.toString())
-            val bitterness = beer.bitterness
-            if (bitterness < 0)
-                bitternessEdit.setText("")
-            else
-                bitternessEdit.setText(bitterness.toString())
-
+            // Edit texts are updated using databinding
             // Update the spinners
             // If beertype equals "unknown" set the spinner to ---
             val beerType = beer.type
@@ -167,7 +136,7 @@ class AddBeerFragment : Fragment() {
                     typeSpinner.setSelection(itemIndex)
                 } else {
                     typeSpinner.setSelection(typeArray.indexOf(getString(R.string.other)))
-                    typeEdit.visibility = View.VISIBLE
+                    typeEdit.visible()
                     typeEdit.setText(beerType)
                 }
             }
@@ -177,21 +146,14 @@ class AddBeerFragment : Fragment() {
 
             // Update the image view
             photoPath = Utilities.stringToList(it.photoLocation)
-            if (photoPath.isNotEmpty()) {
-                beerImageView.visibility = View.VISIBLE
-                add_beer_take_photo.visibility = View.VISIBLE
-                defaultImageView.visibility = View.GONE
-                Utilities.setThumbnailFromWidth(beerImageView, photoPath[0], THUMB_LARGE_W)
-            } else {
-                beerImageView.visibility = View.GONE
-                add_beer_take_photo.visibility = View.GONE
-                defaultImageView.visibility = View.VISIBLE
-            }
+            beerImageView.visible(photoPath.isNotEmpty())
+            add_beer_take_photo.visible(photoPath.isNotEmpty())
+            defaultImageView.visible(photoPath.isEmpty())
+            if (photoPath.isNotEmpty()) Utilities.setThumbnailFromWidth(beerImageView, photoPath[0], THUMB_LARGE_W)
         }
 
         // Update the date picker
         updateDatePicker(beer)
-
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -241,7 +203,7 @@ class AddBeerFragment : Fragment() {
     private fun goToImagesActivity() {
         val intent = Intent(activity, ImagesActivity::class.java)
         intent.putStringArrayListExtra(PHOTOS_EXTRA, photoPath)
-        intent.putExtra(BEER_NAME_EXTRA, nameEdit.text.toString().trim { it <= ' ' })
+        intent.putExtra(BEER_NAME_EXTRA, edit_beer_name.text.toString().trim { it <= ' ' })
         startActivity(intent)
     }
 
@@ -286,9 +248,9 @@ class AddBeerFragment : Fragment() {
 //             thumbnail to the imageview.
             Utilities.createThumbnail(photoPath[numPhotos], THUMB_SMALL_W)
             Utilities.createThumbnail(photoPath[numPhotos], THUMB_LARGE_W)
-            beerImageView.visibility = View.VISIBLE
-            add_beer_take_photo.visibility = View.VISIBLE
-            defaultImageView.visibility = View.GONE
+            beerImageView.visible()
+            add_beer_take_photo.visible()
+            defaultImageView.visible(false)
             Utilities.setThumbnailFromWidth(beerImageView, photoPath[0], THUMB_LARGE_W)
         } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
             // Otherwise remove the path because the photo was not saved
@@ -301,18 +263,18 @@ class AddBeerFragment : Fragment() {
     // Saves a beer to the database from the input fields
     private fun saveBeer() {
         // Read from input fields. Use trim to eliminate excess white space.
-        val beerName = nameEdit.text.toString().trim { it <= ' ' }
+        val beerName = edit_beer_name.text.toString().trim { it <= ' ' }
         var beerType = typeSpinner.selectedItem.toString()
         // If beerType is other set beerType to EditText string
         if (beerType == getString(R.string.other)) beerType = typeEdit.text.toString().trim { it <= ' ' }
         val ratingDouble = ratingSpinner.selectedItem.toString().toDoubleOrNull()
-        var percentage = percentageEdit.text.toString().toDoubleOrNull()
-        var bitterness = bitternessEdit.text.toString().toIntOrNull()
-        val breweryName = breweryNameEdit.text.toString().trim { it <= ' ' }
-        val city = cityEdit.text.toString().trim { it <= ' ' }
-        val state = stateEdit.text.toString().trim { it <= ' ' }
-        val country = countryEdit.text.toString().trim { it <= ' ' }
-        val comments = commentsEdit.text.toString().trim { it <= ' ' }
+        var percentage = edit_beer_percentage.text.toString().toDoubleOrNull()
+        var bitterness = edit_beer_bitterness.text.toString().toIntOrNull()
+        val breweryName = edit_brewery_name.text.toString().trim { it <= ' ' }
+        val city = edit_city.text.toString().trim { it <= ' ' }
+        val state = edit_state.text.toString().trim { it <= ' ' }
+        val country = edit_country.text.toString().trim { it <= ' ' }
+        val comments = edit_beer_comments.text.toString().trim { it <= ' ' }
         val date = dateText.text.toString()
 
         // Check that BeerName has an entry. Popup a toast to alert user.

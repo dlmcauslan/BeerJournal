@@ -138,6 +138,6 @@ object Utilities {
     }
 }
 
-fun View.visible(isVisible: Boolean) {
+fun View.visible(isVisible: Boolean = true) {
     visibility = if (isVisible) View.VISIBLE else View.GONE
 }
